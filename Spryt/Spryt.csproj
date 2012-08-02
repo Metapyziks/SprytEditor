@@ -52,6 +52,14 @@
     <Compile Include="Canvas.Designer.cs">
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
+    <Compile Include="ColourPalettePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ColourPalettePanel.Designer.cs">
+      <DependentUpon>ColourPalettePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageInfo.cs" />
+    <Compile Include="Layer.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,6 +68,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ColourPalettePanel.resx">
+      <DependentUpon>ColourPalettePanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -83,7 +94,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Images\color_wheel.png" />
+    <Content Include="Images\page.png" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Images\cursor.png" />
     <None Include="Images\paintcan.png" />

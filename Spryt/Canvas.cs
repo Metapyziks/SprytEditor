@@ -9,18 +9,18 @@ using System.Drawing;
 
 namespace Spryt
 {
-    public partial class Canvas : Panel
+    partial class Canvas : Panel
     {
         private Control myOldParent;
 
-        public Canvas()
-        {
-            InitializeComponent();
-        }
+        internal readonly ImageInfo Image;
 
-        public Canvas( IContainer container )
+        public Canvas( ImageInfo image )
         {
-            container.Add( this );
+            Image = image;
+
+            Size = new Size( image.Width * 8, image.Height * 8 );
+            BorderStyle = BorderStyle.FixedSingle;
 
             InitializeComponent();
         }
@@ -29,6 +29,12 @@ namespace Spryt
         {
             if( Parent != null )
                 Location = new Point( ( Parent.Width - Width ) / 2, ( Parent.Height - Height ) / 2 );
+        }
+
+        public void SetZoomScale( float scale )
+        {
+            Size = new Size( (int) Math.Round( Image.Width * scale ), (int) Math.Round( Image.Height * scale ) );
+            Centre();
         }
 
         private void OnParentResize( object sender, EventArgs e )

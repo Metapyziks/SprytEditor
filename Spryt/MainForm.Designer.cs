@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup( "Selection", System.Windows.Forms.HorizontalAlignment.Left );
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup( "Drawing", System.Windows.Forms.HorizontalAlignment.Left );
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem( "", "cursor.png" );
@@ -36,20 +37,28 @@
             System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem( "", 2 );
             System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem( "", "paintcan.png" );
             System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem( "", "shape_square.png" );
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.canvasTabs = new System.Windows.Forms.TabControl();
+            this.fileImageList = new System.Windows.Forms.ImageList( this.components );
+            this.toolList = new System.Windows.Forms.ListView();
             this.toolsImageList = new System.Windows.Forms.ImageList( this.components );
-            this.canvas = new Spryt.Canvas( this.components );
+            this.vertSplit = new System.Windows.Forms.SplitContainer();
+            this.leftSplit = new System.Windows.Forms.SplitContainer();
+            this.colourPalettePanel = new Spryt.ColourPalettePanel();
             this.menuStrip.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) ( this.vertSplit ) ).BeginInit();
+            this.vertSplit.Panel1.SuspendLayout();
+            this.vertSplit.Panel2.SuspendLayout();
+            this.vertSplit.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) ( this.leftSplit ) ).BeginInit();
+            this.leftSplit.Panel1.SuspendLayout();
+            this.leftSplit.Panel2.SuspendLayout();
+            this.leftSplit.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -60,7 +69,7 @@
             this.viewToolStripMenuItem} );
             this.menuStrip.Location = new System.Drawing.Point( 0, 0 );
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size( 1024, 24 );
+            this.menuStrip.Size = new System.Drawing.Size( 973, 24 );
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -78,47 +87,50 @@
             // 
             // viewToolStripMenuItem
             // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.zoomToolStripMenuItem} );
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size( 44, 20 );
             this.viewToolStripMenuItem.Text = "View";
             // 
+            // zoomToolStripMenuItem
+            // 
+            this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size( 137, 22 );
+            this.zoomToolStripMenuItem.Text = "Zoom (8.0x)";
+            // 
             // statusStrip
             // 
-            this.statusStrip.Location = new System.Drawing.Point( 0, 618 );
+            this.statusStrip.Location = new System.Drawing.Point( 0, 631 );
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size( 1024, 22 );
+            this.statusStrip.Size = new System.Drawing.Size( 973, 22 );
             this.statusStrip.TabIndex = 3;
             this.statusStrip.Text = "statusStrip";
             // 
-            // tabPage1
+            // canvasTabs
             // 
-            this.tabPage1.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.tabPage1.Controls.Add( this.canvas );
-            this.tabPage1.Location = new System.Drawing.Point( 4, 22 );
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding( 3 );
-            this.tabPage1.Size = new System.Drawing.Size( 867, 568 );
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "untitled";
+            this.canvasTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.canvasTabs.ImageList = this.fileImageList;
+            this.canvasTabs.Location = new System.Drawing.Point( 0, 0 );
+            this.canvasTabs.Name = "canvasTabs";
+            this.canvasTabs.SelectedIndex = 0;
+            this.canvasTabs.Size = new System.Drawing.Size( 819, 607 );
+            this.canvasTabs.TabIndex = 5;
             // 
-            // tabControl1
+            // fileImageList
             // 
-            this.tabControl1.Controls.Add( this.tabPage1 );
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point( 149, 24 );
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size( 875, 594 );
-            this.tabControl1.TabIndex = 5;
+            this.fileImageList.ImageStream = ( (System.Windows.Forms.ImageListStreamer) ( resources.GetObject( "fileImageList.ImageStream" ) ) );
+            this.fileImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.fileImageList.Images.SetKeyName( 0, "page.png" );
             // 
-            // listView1
+            // toolList
             // 
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.toolList.Dock = System.Windows.Forms.DockStyle.Fill;
             listViewGroup1.Header = "Selection";
             listViewGroup1.Name = "selectionGroup";
             listViewGroup2.Header = "Drawing";
             listViewGroup2.Name = "drawingGroup";
-            this.listView1.Groups.AddRange( new System.Windows.Forms.ListViewGroup[] {
+            this.toolList.Groups.AddRange( new System.Windows.Forms.ListViewGroup[] {
             listViewGroup1,
             listViewGroup2} );
             listViewItem1.Group = listViewGroup1;
@@ -126,23 +138,23 @@
             listViewItem3.Group = listViewGroup2;
             listViewItem4.Group = listViewGroup2;
             listViewItem5.Group = listViewGroup2;
-            this.listView1.Items.AddRange( new System.Windows.Forms.ListViewItem[] {
+            this.toolList.Items.AddRange( new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2,
             listViewItem3,
             listViewItem4,
             listViewItem5} );
-            this.listView1.LargeImageList = this.toolsImageList;
-            this.listView1.Location = new System.Drawing.Point( 0, 24 );
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size( 149, 594 );
-            this.listView1.SmallImageList = this.toolsImageList;
-            this.listView1.StateImageList = this.toolsImageList;
-            this.listView1.TabIndex = 5;
-            this.listView1.TileSize = new System.Drawing.Size( 64, 32 );
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Tile;
+            this.toolList.LargeImageList = this.toolsImageList;
+            this.toolList.Location = new System.Drawing.Point( 0, 0 );
+            this.toolList.MultiSelect = false;
+            this.toolList.Name = "toolList";
+            this.toolList.Size = new System.Drawing.Size( 150, 210 );
+            this.toolList.SmallImageList = this.toolsImageList;
+            this.toolList.StateImageList = this.toolsImageList;
+            this.toolList.TabIndex = 5;
+            this.toolList.TileSize = new System.Drawing.Size( 64, 32 );
+            this.toolList.UseCompatibleStateImageBehavior = false;
+            this.toolList.View = System.Windows.Forms.View.Tile;
             // 
             // toolsImageList
             // 
@@ -154,31 +166,77 @@
             this.toolsImageList.Images.SetKeyName( 3, "shading.png" );
             this.toolsImageList.Images.SetKeyName( 4, "shape_square.png" );
             // 
-            // canvas
+            // vertSplit
             // 
-            this.canvas.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.canvas.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.canvas.Location = new System.Drawing.Point( 108, 32 );
-            this.canvas.Margin = new System.Windows.Forms.Padding( 8 );
-            this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size( 512, 512 );
-            this.canvas.TabIndex = 4;
+            this.vertSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.vertSplit.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.vertSplit.Location = new System.Drawing.Point( 0, 24 );
+            this.vertSplit.Name = "vertSplit";
+            // 
+            // vertSplit.Panel1
+            // 
+            this.vertSplit.Panel1.Controls.Add( this.leftSplit );
+            this.vertSplit.Panel1MinSize = 150;
+            // 
+            // vertSplit.Panel2
+            // 
+            this.vertSplit.Panel2.Controls.Add( this.canvasTabs );
+            this.vertSplit.Panel2MinSize = 256;
+            this.vertSplit.Size = new System.Drawing.Size( 973, 607 );
+            this.vertSplit.SplitterDistance = 150;
+            this.vertSplit.TabIndex = 6;
+            // 
+            // leftSplit
+            // 
+            this.leftSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.leftSplit.Location = new System.Drawing.Point( 0, 0 );
+            this.leftSplit.Name = "leftSplit";
+            this.leftSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // leftSplit.Panel1
+            // 
+            this.leftSplit.Panel1.Controls.Add( this.toolList );
+            this.leftSplit.Panel1MinSize = 150;
+            // 
+            // leftSplit.Panel2
+            // 
+            this.leftSplit.Panel2.Controls.Add( this.colourPalettePanel );
+            this.leftSplit.Panel2MinSize = 391;
+            this.leftSplit.Size = new System.Drawing.Size( 150, 607 );
+            this.leftSplit.SplitterDistance = 210;
+            this.leftSplit.TabIndex = 7;
+            // 
+            // colourPalettePanel
+            // 
+            this.colourPalettePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colourPalettePanel.Location = new System.Drawing.Point( 0, 0 );
+            this.colourPalettePanel.MaximumSize = new System.Drawing.Size( 150, 391 );
+            this.colourPalettePanel.MinimumSize = new System.Drawing.Size( 150, 391 );
+            this.colourPalettePanel.Name = "colourPalettePanel";
+            this.colourPalettePanel.Size = new System.Drawing.Size( 150, 391 );
+            this.colourPalettePanel.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 1024, 640 );
-            this.Controls.Add( this.tabControl1 );
-            this.Controls.Add( this.listView1 );
+            this.ClientSize = new System.Drawing.Size( 973, 653 );
+            this.Controls.Add( this.vertSplit );
             this.Controls.Add( this.statusStrip );
             this.Controls.Add( this.menuStrip );
+            this.MinimumSize = new System.Drawing.Size( 425, 543 );
             this.Name = "MainForm";
             this.Text = "Spryt";
             this.menuStrip.ResumeLayout( false );
             this.menuStrip.PerformLayout();
-            this.tabPage1.ResumeLayout( false );
-            this.tabControl1.ResumeLayout( false );
+            this.vertSplit.Panel1.ResumeLayout( false );
+            this.vertSplit.Panel2.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) ( this.vertSplit ) ).EndInit();
+            this.vertSplit.ResumeLayout( false );
+            this.leftSplit.Panel1.ResumeLayout( false );
+            this.leftSplit.Panel2.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) ( this.leftSplit ) ).EndInit();
+            this.leftSplit.ResumeLayout( false );
             this.ResumeLayout( false );
             this.PerformLayout();
 
@@ -191,11 +249,14 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.TabPage tabPage1;
-        private Canvas canvas;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.TabControl canvasTabs;
+        private System.Windows.Forms.ListView toolList;
         private System.Windows.Forms.ImageList toolsImageList;
+        private System.Windows.Forms.ImageList fileImageList;
+        private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer vertSplit;
+        private System.Windows.Forms.SplitContainer leftSplit;
+        private ColourPalettePanel colourPalettePanel;
 
     }
 }
