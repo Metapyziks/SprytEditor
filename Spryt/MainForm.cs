@@ -81,7 +81,7 @@ namespace Spryt
             ZoomScale = 1.0f;
         }
 
-        private ImageInfo CreateNew( int width = 16, int height = 16, string name = "untitled" )
+        private ImageInfo CreateNewImage( int width = 16, int height = 16, string name = "untitled" )
         {
             ImageInfo newImage = new ImageInfo( width, height, name );
             newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
@@ -126,7 +126,7 @@ namespace Spryt
         {
             NewImageDialog dialog = new NewImageDialog();
             if ( dialog.ShowDialog() == DialogResult.OK )
-                CreateNew( dialog.ImageSize.Width, dialog.ImageSize.Height );
+                CreateNewImage( dialog.ImageSize.Width, dialog.ImageSize.Height );
         }
 
         private void fileToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
@@ -158,11 +158,82 @@ namespace Spryt
         private void canvasTabs_TabClosed( object sender, ClosedEventArgs e )
         {
             myCurrentImages.RemoveAt( e.TabIndex );
+            canvasTabs_SelectedIndexChanged( sender, e );
         }
 
         private void colourPalettePanel_SelectedColourChanged( object sender, SelectedColourChangedEventArgs e )
         {
             CurrentImage.ColourIndex = colourPalettePanel.SelectedIndex;
+        }
+
+        private void importpngToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.DefaultExt = "png";
+            dialog.Filter = "PNG Image (*.png)|*.png";
+            dialog.Title = "Import Image";
+            if ( dialog.ShowDialog() == DialogResult.OK )
+            {
+                Bitmap bmp = new Bitmap( dialog.FileName );
+                String trimmedName = Path.GetFileName( dialog.FileName );
+                ImageInfo image = CreateNewImage( bmp.Width, bmp.Height, trimmedName );
+
+                Dictionary<Color, int> colours = new Dictionary<Color, int>();
+
+                for ( int x = 0; x < bmp.Width; ++x )
+                {
+                    for ( int y = 0; y < bmp.Height; ++y )
+                    {
+                        Color clr = bmp.GetPixel( x, y );
+                        if ( clr.A < 128 )
+                            continue;
+                        else
+                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
+
+                        if ( !colours.ContainsKey( clr ) )
+                            colours.Add( clr, 1 );
+                        else
+                            ++colours[ clr ];
+                    }
+                }
+
+                List<Color> sorted = colours.Select( x => x.Key ).OrderByDescending( x => colours[ x ] ).ToList();
+
+                while ( sorted.Count < 8 )
+                    sorted.Add( Color.Black );
+
+                while ( sorted.Count > 8 )
+                    sorted.RemoveAt( sorted.Count - 1 );
+
+                if ( sorted.Count != 8 )
+                {
+                    MessageBox.Show( "Too many colours (" + sorted.Count + ")! Colour merging will be implemented later.", "Import Image", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                    return;
+                }
+
+                image.Palette = sorted.ToArray();
+
+                if ( CurrentImage == image )
+                    colourPalettePanel.SetPalette( sorted.ToArray() );
+
+                for ( int x = 0; x < bmp.Width; ++x )
+                {
+                    for ( int y = 0; y < bmp.Height; ++y )
+                    {
+                        Color clr = bmp.GetPixel( x, y );
+                        Pixel pix;
+                        if ( clr.A < 128 )
+                            pix = Pixel.Empty;
+                        else
+                        {
+                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
+                            pix = (Pixel) ( 8 | sorted.IndexOf( clr ) );
+                        }
+
+                        image.Layers[ 0 ].SetPixel( x, y, pix );
+                    }
+                }
+            }
         }
     }
 }
