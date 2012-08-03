@@ -17,6 +17,9 @@ namespace Spryt
         private EventHandler myOnParentMouseEnterHandler;
         private EventHandler myOnParentDisposedHandler;
 
+        private bool myDrawing;
+        private Point myLastDrawPos;
+
         internal readonly ImageInfo Image;
 
         public Canvas( ImageInfo image )
@@ -24,6 +27,8 @@ namespace Spryt
             myOnParentResizeHandler = new EventHandler( OnParentResize );
             myOnParentMouseEnterHandler = new EventHandler( OnParentMouseEnter );
             myOnParentDisposedHandler = new EventHandler( OnParentDisposed );
+
+            myDrawing = false;
 
             Image = image;
 
@@ -74,18 +79,54 @@ namespace Spryt
 
         protected override void OnMouseDown( MouseEventArgs e )
         {
+            myDrawing = true;
+
             int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
             int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
-            if ( x >= 0 && y >= 0 && x < Image.Width && y < Image.Height )
-            {
-                if ( MouseButtons.HasFlag( MouseButtons.Left ) )
-                    Image.Layers[ 0 ].SetPixel( x, y, (Pixel) ( 8 | Image.ColourIndex ) );
-                else
-                    Image.Layers[ 0 ].SetPixel( x, y, Pixel.Empty );
+            Draw( x, y, true );
+        }
 
-                Invalidate();
+        private void Draw( int x, int y, bool begin )
+        {
+            if ( begin )
+                myLastDrawPos = new Point( x, y );
+
+            LineRasterEnumerator line = new LineRasterEnumerator( myLastDrawPos, new Point( x, y ) );
+
+            while ( line.MoveNext() )
+            {
+                int lx = line.Current.X;
+                int ly = line.Current.Y;
+
+                if ( lx >= 0 && ly >= 0 && lx < Image.Width && ly < Image.Height )
+                {
+                    if ( MouseButtons.HasFlag( MouseButtons.Left ) )
+                        Image.Layers[ 0 ].SetPixel( lx, ly, (Pixel) ( 8 | Image.ColourIndex ) );
+                    else
+                        Image.Layers[ 0 ].SetPixel( lx, ly, Pixel.Empty );
+
+                    Invalidate();
+                }
             }
+
+            myLastDrawPos = new Point( x, y );
+        }
+
+        protected override void OnMouseMove( MouseEventArgs e )
+        {
+            if ( myDrawing )
+            {
+                int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
+                int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+
+                Draw( x, y, false );
+            }
+        }
+
+        protected override void OnMouseUp( MouseEventArgs e )
+        {
+            myDrawing = false;
         }
 
         protected override void OnParentChanged( EventArgs e )

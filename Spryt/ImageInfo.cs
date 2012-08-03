@@ -50,6 +50,8 @@ namespace Spryt
 
                 foreach ( Layer layer in Layers )
                     layer.UpdateBitmap();
+
+                Canvas.Invalidate();
             }
         }
 
@@ -67,7 +69,7 @@ namespace Spryt
 
         public List<Layer> Layers { get; set; }
 
-        public ImageInfo( int width = 16, int height = 16, String name = "untitled.png" )
+        public ImageInfo( int width = 16, int height = 16, String name = "untitled" )
         {
             Size = new Size( width, height );
             FileName = name;

@@ -78,12 +78,10 @@ namespace Spryt
             if ( !Directory.Exists( "palettes" ) )
                 Directory.CreateDirectory( "palettes" );
 
-            ZoomScale = 8.0f;
-
-            CreateNew();
+            ZoomScale = 1.0f;
         }
 
-        private ImageInfo CreateNew( int width = 16, int height = 16, string name = "untitled.png" )
+        private ImageInfo CreateNew( int width = 16, int height = 16, string name = "untitled" )
         {
             ImageInfo newImage = new ImageInfo( width, height, name );
             newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
@@ -126,12 +124,19 @@ namespace Spryt
 
         private void newToolStripMenuItem_Click( object sender, EventArgs e )
         {
-            CreateNew();
+            NewImageDialog dialog = new NewImageDialog();
+            if ( dialog.ShowDialog() == DialogResult.OK )
+                CreateNew( dialog.ImageSize.Width, dialog.ImageSize.Height );
         }
 
         private void fileToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
         {
+            saveAsToolStripMenuItem.Enabled = saveAllToolStripMenuItem.Enabled =
+                saveToolStripMenuItem.Enabled = exportpngToolStripMenuItem.Enabled =
+                closeAllToolStripMenuItem.Enabled = closeToolStripMenuItem.Enabled =
+                myCurrentImages.Count > 0;
 
+            recentFilesToolStripMenuItem.Enabled = recentFilesToolStripMenuItem.DropDownItems.Count > 0;
         }
 
         private void colourPalettePanel_PaletteChanged( object sender, PaletteChangedEventArgs e )
