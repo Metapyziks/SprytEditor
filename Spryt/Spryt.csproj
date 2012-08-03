@@ -52,6 +52,9 @@
     <Compile Include="Canvas.Designer.cs">
       <DependentUpon>Canvas.cs</DependentUpon>
     </Compile>
+    <Compile Include="CanvasTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ColourPalettePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -66,6 +69,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pixel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ColourPalettePanel.resx">
@@ -95,8 +99,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\background.png" />
     <Content Include="Images\color_wheel.png" />
+    <Content Include="Images\cross.png" />
+    <Content Include="Images\delete.png" />
+    <Content Include="Images\disk.png" />
+    <Content Include="Images\folder_palette.png" />
     <Content Include="Images\page.png" />
+    <Content Include="Images\palette.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Images\cursor.png" />

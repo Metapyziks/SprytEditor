@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Spryt
 {
@@ -18,6 +19,17 @@ namespace Spryt
 
         private int myZoomLevel = 0;
         private List<ImageInfo> myCurrentImages;
+
+        private ImageInfo CurrentImage
+        {
+            get
+            {
+                if ( canvasTabs.TabCount == 0 )
+                    return null;
+
+                return myCurrentImages[ canvasTabs.SelectedIndex ];
+            }
+        }
 
         public float ZoomScale
         {
@@ -40,8 +52,8 @@ namespace Spryt
                     item.Enabled = !item.Checked;
                 }
 
-                foreach ( ImageInfo image in myCurrentImages )
-                    image.Canvas.SetZoomScale( ZoomScale );
+                if( CurrentImage != null )
+                    CurrentImage.ZoomScale = ZoomScale;
             }
         }
 
@@ -63,6 +75,9 @@ namespace Spryt
         {
             base.OnLoad( e );
 
+            if ( !Directory.Exists( "palettes" ) )
+                Directory.CreateDirectory( "palettes" );
+
             ZoomScale = 8.0f;
 
             CreateNew();
@@ -71,6 +86,8 @@ namespace Spryt
         private ImageInfo CreateNew( int width = 16, int height = 16, string name = "untitled.png" )
         {
             ImageInfo newImage = new ImageInfo( width, height, name );
+            newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
+            newImage.ZoomScale = ZoomScale;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
             return newImage;
@@ -78,9 +95,9 @@ namespace Spryt
 
         protected override void OnMouseWheel( MouseEventArgs e )
         {
-            base.OnMouseWheel( e );
-
-            if ( ModifierKeys.HasFlag( Keys.Control ) )
+            if ( !ModifierKeys.HasFlag( Keys.Control ) )
+                colourPalettePanel.SelectedIndex -= Math.Sign( e.Delta );
+            else
             {
                 myZoomLevel += Math.Sign( e.Delta );
 
@@ -91,6 +108,8 @@ namespace Spryt
 
                 ZoomScale = stZoomLevels[ myZoomLevel ];
             }
+
+            base.OnMouseWheel( e );
         }
 
         private void xToolStripMenuItem_CheckedChanged( object sender, EventArgs e )
@@ -101,6 +120,31 @@ namespace Spryt
             {
                 zoomToolStripMenuItem.Text = "Zoom (" + item.Text + ")";
                 ZoomScale = float.Parse( item.Text.Substring( 0, item.Text.Length - 1 ) );
+            }
+        }
+
+        private void newToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            CreateNew();
+        }
+
+        private void fileToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
+        {
+
+        }
+
+        private void colourPalettePanel_PaletteChanged( object sender, PaletteChangedEventArgs e )
+        {
+            if( CurrentImage != null )
+                CurrentImage.Palette = (Color[]) e.Palette.Clone();
+        }
+
+        private void canvasTabs_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            if ( CurrentImage != null )
+            {
+                colourPalettePanel.SetPalette( (Color[]) CurrentImage.Palette.Clone() );
+                ZoomScale = CurrentImage.ZoomScale;
             }
         }
     }

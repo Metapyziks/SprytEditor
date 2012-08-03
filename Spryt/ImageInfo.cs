@@ -10,6 +10,8 @@ namespace Spryt
     class ImageInfo
     {
         private string myFileName;
+        private Color[] myPalette;
+        private float myZoomScale;
 
         public String FileName
         {
@@ -39,6 +41,28 @@ namespace Spryt
             get { return Size.Height; }
         }
 
+        public Color[] Palette
+        {
+            get { return myPalette; }
+            set
+            {
+                myPalette = value;
+
+                foreach ( Layer layer in Layers )
+                    layer.UpdateBitmap();
+            }
+        }
+
+        public float ZoomScale
+        {
+            get { return myZoomScale; }
+            set
+            {
+                myZoomScale = value;
+                Canvas.UpdateZoomScale();
+            }
+        }
+
         public List<Layer> Layers { get; set; }
 
         public ImageInfo( int width = 16, int height = 16, String name = "untitled.png" )
@@ -51,7 +75,11 @@ namespace Spryt
             Tab.BackColor = SystemColors.ControlDark;
 
             Canvas = new Canvas( this );
+            Canvas.Name = "canvas";
             Tab.Controls.Add( Canvas );
+
+            Layers = new List<Layer>();
+            Layers.Add( new Layer( this ) );
         }
     }
 }
