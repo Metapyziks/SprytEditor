@@ -10,14 +10,21 @@ using System.Drawing.Imaging;
 
 namespace Spryt
 {
-    partial class Canvas : Panel
+    partial class Canvas : Panel, IDisposable
     {
         private Control myOldParent;
+        private EventHandler myOnParentResizeHandler;
+        private EventHandler myOnParentMouseEnterHandler;
+        private EventHandler myOnParentDisposedHandler;
 
         internal readonly ImageInfo Image;
 
         public Canvas( ImageInfo image )
         {
+            myOnParentResizeHandler = new EventHandler( OnParentResize );
+            myOnParentMouseEnterHandler = new EventHandler( OnParentMouseEnter );
+            myOnParentDisposedHandler = new EventHandler( OnParentDisposed );
+
             Image = image;
 
             Size = new Size( image.Width * 8, image.Height * 8 );
@@ -73,7 +80,7 @@ namespace Spryt
             if ( x >= 0 && y >= 0 && x < Image.Width && y < Image.Height )
             {
                 if ( MouseButtons.HasFlag( MouseButtons.Left ) )
-                    Image.Layers[ 0 ].SetPixel( x, y, Pixel.Colour1 );
+                    Image.Layers[ 0 ].SetPixel( x, y, (Pixel) ( 8 | Image.ColourIndex ) );
                 else
                     Image.Layers[ 0 ].SetPixel( x, y, Pixel.Empty );
 
@@ -87,17 +94,19 @@ namespace Spryt
 
             if ( myOldParent != null )
             {
-                myOldParent.Resize -= OnParentResize;
-                myOldParent.MouseEnter -= OnParentMouseEnter;
+                myOldParent.Resize -= myOnParentResizeHandler;
+                myOldParent.MouseEnter -= myOnParentMouseEnterHandler;
+                myOldParent.Disposed -= myOnParentDisposedHandler;
             }
 
             if ( Parent != null )
             {
-                Parent.Resize += OnParentResize;
-                Parent.MouseEnter += OnParentMouseEnter;
-            }
+                Parent.Resize += myOnParentResizeHandler;
+                Parent.MouseEnter += myOnParentMouseEnterHandler;
+                Parent.Disposed += myOnParentDisposedHandler;
 
-            Centre();
+                Centre();
+            }
 
             myOldParent = Parent;
         }
@@ -119,6 +128,19 @@ namespace Spryt
                 e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
 
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
+        }
+
+        private void OnParentDisposed( object sender, EventArgs e )
+        {
+            Dispose();
+        }
+
+        public new void Dispose()
+        {
+            Parent = null;
+            OnParentChanged( null );
+
+            base.Dispose();
         }
     }
 }

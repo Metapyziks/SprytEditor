@@ -25,7 +25,7 @@ namespace Spryt
         }
         public bool Cancel { get; set; }
         /// <summary>
-        /// Get/Set the tab index value where the close button is clicked
+        /// Get the tab index value where the close button is clicked
         /// </summary>
         public int TabIndex
         {
@@ -37,10 +37,12 @@ namespace Spryt
     }
     public class ClosedEventArgs : EventArgs
     {
+        private readonly int _nTabIndex = -1;
         private readonly TabPage _tab;
-        public ClosedEventArgs( TabPage tab )
+        public ClosedEventArgs( TabPage tab, int nTabIndex )
         {
             _tab = tab;
+            _nTabIndex = nTabIndex;
         }
         /// <summary>
         /// Get/Set the tab index value where the close button is clicked
@@ -50,6 +52,16 @@ namespace Spryt
             get
             {
                 return _tab;
+            }
+        }
+        /// <summary>
+        /// Get the tab index value where the close button is clicked
+        /// </summary>
+        public int TabIndex
+        {
+            get
+            {
+                return _nTabIndex;
             }
         }
     }
@@ -141,14 +153,16 @@ namespace Spryt
         }
         public void CloseTab( TabPage tp )
         {
-            ClosingEventArgs args = new ClosingEventArgs( TabPages.IndexOf( tp ) );
+            int index = TabPages.IndexOf( tp );
+
+            ClosingEventArgs args = new ClosingEventArgs( index );
             OnTabClosing( args );
             //Remove the tab and fir the event tot he client
             if ( !args.Cancel )
             {
                 // close and remove the tab, dispose it too
                 TabPages.Remove( tp );
-                OnTabClosed( new ClosedEventArgs( tp ) );
+                OnTabClosed( new ClosedEventArgs( tp, index ) );
                 tp.Dispose();
             }
         }

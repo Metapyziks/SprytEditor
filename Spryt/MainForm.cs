@@ -87,6 +87,7 @@ namespace Spryt
         {
             ImageInfo newImage = new ImageInfo( width, height, name );
             newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
+            newImage.ColourIndex = colourPalettePanel.SelectedIndex;
             newImage.ZoomScale = ZoomScale;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
@@ -145,7 +146,18 @@ namespace Spryt
             {
                 colourPalettePanel.SetPalette( (Color[]) CurrentImage.Palette.Clone() );
                 ZoomScale = CurrentImage.ZoomScale;
+                colourPalettePanel.SelectedIndex = CurrentImage.ColourIndex;
             }
+        }
+
+        private void canvasTabs_TabClosed( object sender, ClosedEventArgs e )
+        {
+            myCurrentImages.RemoveAt( e.TabIndex );
+        }
+
+        private void colourPalettePanel_SelectedColourChanged( object sender, SelectedColourChangedEventArgs e )
+        {
+            CurrentImage.ColourIndex = colourPalettePanel.SelectedIndex;
         }
     }
 }

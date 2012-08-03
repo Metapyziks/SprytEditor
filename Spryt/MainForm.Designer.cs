@@ -312,6 +312,7 @@
             this.colourPalettePanel.Size = new System.Drawing.Size( 156, 429 );
             this.colourPalettePanel.TabIndex = 0;
             this.colourPalettePanel.PaletteChanged += new System.EventHandler<Spryt.PaletteChangedEventArgs>( this.colourPalettePanel_PaletteChanged );
+            this.colourPalettePanel.SelectedColourChanged += new System.EventHandler<Spryt.SelectedColourChangedEventArgs>( this.colourPalettePanel_SelectedColourChanged );
             // 
             // canvasTabs
             // 
@@ -326,6 +327,7 @@
             this.canvasTabs.Size = new System.Drawing.Size( 819, 607 );
             this.canvasTabs.TabIndex = 5;
             this.canvasTabs.TabStop = false;
+            this.canvasTabs.TabClosed += new Spryt.CanvasTabControl.TabClosedDelegate( this.canvasTabs_TabClosed );
             this.canvasTabs.SelectedIndexChanged += new System.EventHandler( this.canvasTabs_SelectedIndexChanged );
             // 
             // MainForm

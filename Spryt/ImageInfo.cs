@@ -53,6 +53,8 @@ namespace Spryt
             }
         }
 
+        public int ColourIndex { get; set; }
+
         public float ZoomScale
         {
             get { return myZoomScale; }
