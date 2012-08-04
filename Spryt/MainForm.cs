@@ -246,6 +246,28 @@ namespace Spryt
             }
         }
 
+        private void exportpngToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.DefaultExt = "png";
+            dialog.Filter = "PNG Image (*.png)|*.png";
+            dialog.Title = "Export Image";
+            dialog.FileName = CurrentImage.FileName + ".png";
+            dialog.OverwritePrompt = true;
+            if ( dialog.ShowDialog() == DialogResult.OK )
+            {
+                Bitmap bmp = new Bitmap( CurrentImage.Width, CurrentImage.Height );
+                Graphics g = Graphics.FromImage( bmp );
+
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+
+                foreach ( Layer layer in CurrentImage.Layers )
+                    g.DrawImage( layer.Bitmap, Point.Empty );
+
+                bmp.Save( dialog.FileName, System.Drawing.Imaging.ImageFormat.Png );
+            }
+        }
+
         private void toolPanel_CurrentToolChanged( object sender, CurrentToolChangedEventArgs e )
         {
             for ( int i = 0; i < myToolMenuButtons.Length; ++i )
