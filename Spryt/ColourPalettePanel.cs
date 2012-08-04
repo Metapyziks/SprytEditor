@@ -18,7 +18,7 @@ namespace Spryt
             0x000000, 0x242424, 0x484848, 0x6d6d6d, 0x919191, 0xb6b6b6, 0xdadada, 0xffffff
         };
 
-        private Button[] myColourBtns;
+        private RadioButton[] myColourBtns;
         private Button[] myPickerBtns;
 
         private int mySelectedIndex;
@@ -34,13 +34,8 @@ namespace Spryt
                 mySelectedIndex = value;
                 selectedColourPanel.BackColor = Palette[ value ];
 
-                for ( int i = 0; i < 8; ++i )
-                {
-                    if ( i == value )
-                        myColourBtns[ i ].FlatAppearance.BorderSize = 3;
-                    else
-                        myColourBtns[ i ].FlatAppearance.BorderSize = 1;
-                }
+                if ( !myColourBtns[ value ].Checked )
+                    myColourBtns[ value ].Checked = true;
 
                 if ( SelectedColourChanged != null )
                     SelectedColourChanged( this, new SelectedColourChangedEventArgs( this ) );
@@ -61,22 +56,22 @@ namespace Spryt
 
             InitializeComponent();
 
-            myColourBtns = new Button[ 8 ];
+            myColourBtns = new RadioButton[ 8 ];
             myPickerBtns = new Button[ 8 ];
             for ( int i = 0; i < 8; ++i )
             {
                 int index = i;
 
-                Button clrBtn = myColourBtns[ i ] = new Button();
+                RadioButton clrBtn = myColourBtns[ i ] = new RadioButton();
                 tableLayoutPanel3.Controls.Add( clrBtn, 0, i );
 
                 clrBtn.Dock = System.Windows.Forms.DockStyle.Fill;
                 clrBtn.Name = "colour" + i;
+                clrBtn.Appearance = Appearance.Button;
                 clrBtn.Size = new System.Drawing.Size( 100, 26 );
+                clrBtn.Font = new Font( new FontFamily( "consolas" ), 10.0f );
                 clrBtn.TabIndex = 1;
                 clrBtn.UseVisualStyleBackColor = false;
-                clrBtn.FlatStyle = FlatStyle.Flat;
-                clrBtn.FlatAppearance.BorderSize = 1;
 
                 clrBtn.Click += ( sender, args ) =>
                 {

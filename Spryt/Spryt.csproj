@@ -79,6 +79,7 @@
     <Compile Include="Pixel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tool.cs" />
     <Compile Include="ToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -20,9 +20,11 @@ namespace Spryt
         private bool myDrawing;
         private Point myLastDrawPos;
 
+        private ToolPanel myToolPanel;
+
         internal readonly ImageInfo Image;
 
-        public Canvas( ImageInfo image )
+        public Canvas( ImageInfo image, ToolPanel toolInfoPanel )
         {
             myOnParentResizeHandler = new EventHandler( OnParentResize );
             myOnParentMouseEnterHandler = new EventHandler( OnParentMouseEnter );
@@ -31,6 +33,7 @@ namespace Spryt
             myDrawing = false;
 
             Image = image;
+            myToolPanel = toolInfoPanel;
 
             Size = new Size( image.Width * 8, image.Height * 8 );
             BorderStyle = BorderStyle.FixedSingle;
@@ -79,21 +82,37 @@ namespace Spryt
 
         protected override void OnMouseDown( MouseEventArgs e )
         {
-            myDrawing = true;
+            if ( e.Button == MouseButtons.Left || e.Button == MouseButtons.Right )
+            {
+                int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
+                int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
-            int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
-            int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+                switch ( myToolPanel.CurrentTool )
+                {
+                    case Tool.Pencil:
+                        myDrawing = true;
+                        myLastDrawPos = new Point( x, y );
 
-            Draw( x, y, true );
+                        if ( e.Button == MouseButtons.Left )
+                            Draw( x, y, Image.CurrentPixel );
+                        else
+                            Draw( x, y, Pixel.Empty );
+
+                        break;
+                    case Tool.Fill:
+                        if ( e.Button == MouseButtons.Left )
+                            Fill( x, y, Image.CurrentPixel );
+                        else if ( e.Button == MouseButtons.Right )
+                            Fill( x, y, Pixel.Empty );
+
+                        break;
+                }
+            }
         }
 
-        private void Draw( int x, int y, bool begin )
+        private void Draw( int x, int y, Pixel pixel )
         {
-            if ( begin )
-                myLastDrawPos = new Point( x, y );
-
             LineRasterEnumerator line = new LineRasterEnumerator( myLastDrawPos, new Point( x, y ) );
-
             while ( line.MoveNext() )
             {
                 int lx = line.Current.X;
@@ -101,16 +120,45 @@ namespace Spryt
 
                 if ( lx >= 0 && ly >= 0 && lx < Image.Width && ly < Image.Height )
                 {
-                    if ( MouseButtons.HasFlag( MouseButtons.Left ) )
-                        Image.Layers[ 0 ].SetPixel( lx, ly, (Pixel) ( 8 | Image.ColourIndex ) );
-                    else
-                        Image.Layers[ 0 ].SetPixel( lx, ly, Pixel.Empty );
-
-                    Invalidate();
+                    Image.Layers[ 0 ].SetPixel( lx, ly, pixel );
                 }
             }
 
             myLastDrawPos = new Point( x, y );
+
+            Invalidate();
+        }
+
+        private void Fill( int x, int y, Pixel pixel )
+        {
+            Stack<Point> stack = new Stack<Point>();
+            stack.Push( new Point( x, y ) );
+
+            Layer layer = Image.Layers[ 0 ];
+            Pixel match = layer.Pixels[ x, y ];
+
+            if ( match == pixel )
+                return;
+
+            while ( stack.Count > 0 )
+            {
+                Point pos = stack.Pop();
+                if ( layer.Pixels[ pos.X, pos.Y ] == match )
+                {
+                    layer.SetPixel( pos.X, pos.Y, pixel );
+
+                    if ( pos.X > 0 )
+                        stack.Push( new Point( pos.X - 1, pos.Y ) );
+                    if ( pos.X < Image.Width - 1 )
+                        stack.Push( new Point( pos.X + 1, pos.Y ) );
+                    if ( pos.Y > 0 )
+                        stack.Push( new Point( pos.X, pos.Y - 1 ) );
+                    if ( pos.Y < Image.Height - 1 )
+                        stack.Push( new Point( pos.X, pos.Y + 1 ) );
+                }
+            }
+
+            Invalidate();
         }
 
         protected override void OnMouseMove( MouseEventArgs e )
@@ -120,7 +168,10 @@ namespace Spryt
                 int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
                 int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
-                Draw( x, y, false );
+                if ( MouseButtons.HasFlag( MouseButtons.Left ) )
+                    Draw( x, y, Image.CurrentPixel );
+                else
+                    Draw( x, y, Pixel.Empty );
             }
         }
 

@@ -56,6 +56,10 @@ namespace Spryt
         }
 
         public int ColourIndex { get; set; }
+        public Pixel CurrentPixel
+        {
+            get { return (Pixel) ( 8 | ColourIndex ); }
+        }
 
         public float ZoomScale
         {
@@ -69,7 +73,7 @@ namespace Spryt
 
         public List<Layer> Layers { get; set; }
 
-        public ImageInfo( int width = 16, int height = 16, String name = "untitled" )
+        public ImageInfo( ToolPanel toolInfoPanel, int width = 16, int height = 16, String name = "untitled" )
         {
             Size = new Size( width, height );
             FileName = name;
@@ -78,7 +82,7 @@ namespace Spryt
             Tab.ImageIndex = 0;
             Tab.BackColor = SystemColors.ControlDark;
 
-            Canvas = new Canvas( this );
+            Canvas = new Canvas( this, toolInfoPanel );
             Canvas.Name = "canvas";
             Tab.Controls.Add( Canvas );
 

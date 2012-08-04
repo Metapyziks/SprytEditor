@@ -20,6 +20,8 @@ namespace Spryt
         private int myZoomLevel = 0;
         private List<ImageInfo> myCurrentImages;
 
+        private ToolStripMenuItem[] myToolMenuButtons;
+
         private ImageInfo CurrentImage
         {
             get
@@ -46,10 +48,7 @@ namespace Spryt
                 foreach ( ToolStripMenuItem item in zoomToolStripMenuItem.DropDownItems )
                 {
                     bool check = float.Parse( item.Text.Substring( 0, item.Text.Length - 1 ) ) == ZoomScale;
-                    if ( check != item.Checked )
-                        item.Checked = check;
-
-                    item.Enabled = !item.Checked;
+                    item.Checked = check;
                 }
 
                 if( CurrentImage != null )
@@ -66,8 +65,29 @@ namespace Spryt
             foreach ( float zl in stZoomLevels )
             {
                 ToolStripMenuItem item = (ToolStripMenuItem) zoomToolStripMenuItem.DropDownItems.Add( zl.ToString( "#.0" ) + "x" );
-                item.CheckOnClick = true;
-                item.CheckedChanged += xToolStripMenuItem_CheckedChanged;
+                item.Click += ( sender, e ) =>
+                {
+                    if ( !item.Checked )
+                    {
+                        zoomToolStripMenuItem.Text = "Zoom (" + item.Text + ")";
+                        ZoomScale = float.Parse( item.Text.Substring( 0, item.Text.Length - 1 ) );
+                    }
+                };
+            }
+
+            myToolMenuButtons = new ToolStripMenuItem[]
+            {
+                selectToolStripMenuItem, areaToolStripMenuItem, magicWandToolStripMenuItem,
+                pencilToolStripMenuItem, fillToolStripMenuItem, boxToolStripMenuItem
+            };
+
+            for ( int i = 0; i < myToolMenuButtons.Length; ++i )
+            {
+                Tool tool = (Tool) i;
+                myToolMenuButtons[ i ].Click += ( sender, e ) =>
+                {
+                    toolPanel.CurrentTool = tool;
+                };
             }
         }
 
@@ -83,7 +103,7 @@ namespace Spryt
 
         private ImageInfo CreateNewImage( int width = 16, int height = 16, string name = "untitled" )
         {
-            ImageInfo newImage = new ImageInfo( width, height, name );
+            ImageInfo newImage = new ImageInfo( toolPanel, width, height, name );
             newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
             newImage.ColourIndex = colourPalettePanel.SelectedIndex;
             newImage.ZoomScale = ZoomScale;
@@ -109,17 +129,6 @@ namespace Spryt
             }
 
             base.OnMouseWheel( e );
-        }
-
-        private void xToolStripMenuItem_CheckedChanged( object sender, EventArgs e )
-        {
-            ToolStripMenuItem item = (ToolStripMenuItem) sender;
-
-            if ( item.Checked )
-            {
-                zoomToolStripMenuItem.Text = "Zoom (" + item.Text + ")";
-                ZoomScale = float.Parse( item.Text.Substring( 0, item.Text.Length - 1 ) );
-            }
         }
 
         private void newToolStripMenuItem_Click( object sender, EventArgs e )
@@ -163,7 +172,8 @@ namespace Spryt
 
         private void colourPalettePanel_SelectedColourChanged( object sender, SelectedColourChangedEventArgs e )
         {
-            CurrentImage.ColourIndex = colourPalettePanel.SelectedIndex;
+            if( CurrentImage != null )
+                CurrentImage.ColourIndex = colourPalettePanel.SelectedIndex;
         }
 
         private void importpngToolStripMenuItem_Click( object sender, EventArgs e )
@@ -234,6 +244,12 @@ namespace Spryt
                     }
                 }
             }
+        }
+
+        private void toolPanel_CurrentToolChanged( object sender, CurrentToolChangedEventArgs e )
+        {
+            for ( int i = 0; i < myToolMenuButtons.Length; ++i )
+                myToolMenuButtons[ i ].Checked = i == (int) e.Tool;
         }
     }
 }
