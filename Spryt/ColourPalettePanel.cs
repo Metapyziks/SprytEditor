@@ -73,6 +73,7 @@ namespace Spryt
                 clrBtn.Appearance = Appearance.Button;
                 clrBtn.Size = new System.Drawing.Size( 100, 26 );
                 clrBtn.Font = new Font( new FontFamily( "consolas" ), 10.0f );
+                clrBtn.TextAlign = ContentAlignment.MiddleCenter;
                 clrBtn.TabIndex = 1;
                 clrBtn.UseVisualStyleBackColor = false;
                 clrBtn.ContextMenuStrip = editHexStrip;
