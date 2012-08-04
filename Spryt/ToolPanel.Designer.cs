@@ -85,8 +85,8 @@
             this.tableLayoutPanel2.Controls.Add( this.areaBtn, 1, 0 );
             this.tableLayoutPanel2.Controls.Add( this.wandBtn, 2, 0 );
             this.tableLayoutPanel2.Controls.Add( this.pencilBtn, 0, 2 );
-            this.tableLayoutPanel2.Controls.Add( this.fillBtn, 1, 2 );
-            this.tableLayoutPanel2.Controls.Add( this.boxBtn, 2, 2 );
+            this.tableLayoutPanel2.Controls.Add( this.fillBtn, 2, 2 );
+            this.tableLayoutPanel2.Controls.Add( this.boxBtn, 1, 2 );
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point( 3, 16 );
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -161,7 +161,7 @@
             this.fillBtn.AutoSize = true;
             this.fillBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fillBtn.Image = global::Spryt.Properties.Resources.paintcan;
-            this.fillBtn.Location = new System.Drawing.Point( 35, 37 );
+            this.fillBtn.Location = new System.Drawing.Point( 67, 37 );
             this.fillBtn.Name = "fillBtn";
             this.fillBtn.Size = new System.Drawing.Size( 26, 26 );
             this.fillBtn.TabIndex = 6;
@@ -173,7 +173,7 @@
             this.boxBtn.AutoSize = true;
             this.boxBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boxBtn.Image = global::Spryt.Properties.Resources.shape_square;
-            this.boxBtn.Location = new System.Drawing.Point( 67, 37 );
+            this.boxBtn.Location = new System.Drawing.Point( 35, 37 );
             this.boxBtn.Name = "boxBtn";
             this.boxBtn.Size = new System.Drawing.Size( 26, 26 );
             this.boxBtn.TabIndex = 7;

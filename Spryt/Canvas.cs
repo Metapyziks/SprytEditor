@@ -107,6 +107,9 @@ namespace Spryt
 
                 switch ( myToolPanel.CurrentTool )
                 {
+                    case Tool.Wand:
+                        WandSelect( x, y, e.Button == MouseButtons.Right );
+                        break;
                     case Tool.Area:
                         mySelectingPixels = true;
                         myLastDrawPos = new Point( x, y );
@@ -116,18 +119,10 @@ namespace Spryt
                         myDrawingPencil = true;
                         myLastDrawPos = new Point( x, y );
 
-                        if ( e.Button == MouseButtons.Left )
-                            DrawPencil( x, y, Image.CurrentPixel );
-                        else
-                            DrawPencil( x, y, Pixel.Empty );
-
+                        DrawPencil( x, y, e.Button == MouseButtons.Left ? Image.CurrentPixel : Pixel.Empty );
                         break;
                     case Tool.Fill:
-                        if ( e.Button == MouseButtons.Left )
-                            Fill( x, y, Image.CurrentPixel );
-                        else if ( e.Button == MouseButtons.Right )
-                            Fill( x, y, Pixel.Empty );
-
+                        Fill( x, y, e.Button == MouseButtons.Left ? Image.CurrentPixel : Pixel.Empty );
                         break;
                     case Tool.Box:
                         myDrawingBox = true;
@@ -169,7 +164,7 @@ namespace Spryt
 
                     if ( mySelectingPixels )
                     {
-                        SelectArea( x, y, e.Button == MouseButtons.Right );
+                        AreaSelect( x, y, e.Button == MouseButtons.Right );
 
                         mySelectingPixels = false;
                     }
@@ -187,7 +182,46 @@ namespace Spryt
             }
         }
 
-        private void SelectArea( int x, int y, bool deselect = false )
+        private void PixelSelect( int x, int y, bool deselect = false )
+        {
+            if ( mySelectedPixels[ x, y ] == deselect )
+                mySelectedArea += ( deselect ? -1 : 1 );
+
+            mySelectedPixels[ x, y ] = !deselect;
+
+            if ( deselect )
+                mySelectedRegion.Exclude( new Rectangle( x, y, 1, 1 ) );
+            else
+                mySelectedRegion.Union( new Rectangle( x, y, 1, 1 ) );
+        }
+
+        private void WandSelect( int x, int y, bool deselect = false )
+        {
+            Stack<Point> stack = new Stack<Point>();
+            stack.Push( new Point( x, y ) );
+
+            Layer layer = Image.Layers[ 0 ];
+            Pixel match = layer.Pixels[ x, y ];
+
+            while ( stack.Count > 0 )
+            {
+                Point pos = stack.Pop();
+                if ( CanDraw( pos.X, pos.Y, true ) && mySelectedPixels[ pos.X, pos.Y ] == deselect && layer.Pixels[ pos.X, pos.Y ] == match )
+                {
+                    PixelSelect( pos.X, pos.Y, deselect );
+
+                    stack.Push( new Point( pos.X - 1, pos.Y ) );
+                    stack.Push( new Point( pos.X + 1, pos.Y ) );
+                    stack.Push( new Point( pos.X, pos.Y - 1 ) );
+                    stack.Push( new Point( pos.X, pos.Y + 1 ) );
+                }
+            }
+
+            UpdateScaledRegion();
+            Invalidate();
+        }
+
+        private void AreaSelect( int x, int y, bool deselect = false )
         {
             int left = Math.Max( Math.Min( x, myLastDrawPos.X ), 0 );
             int right = Math.Min( Math.Max( x, myLastDrawPos.X ), Image.Width - 1 );
@@ -195,22 +229,8 @@ namespace Spryt
             int bottom = Math.Min( Math.Max( y, myLastDrawPos.Y ), Image.Height - 1 );
 
             for ( int px = left; px <= right; ++px )
-            {
                 for ( int py = top; py <= bottom; ++py )
-                {
-                    if ( mySelectedPixels[ px, py ] == deselect )
-                        mySelectedArea += ( deselect ? -1 : 1 );
-
-                    mySelectedPixels[ px, py ] = !deselect;
-                }
-            }
-
-            Rectangle rect = new Rectangle( left, top, right - left + 1, bottom - top + 1 );
-
-            if ( deselect )
-                mySelectedRegion.Exclude( rect );
-            else
-                mySelectedRegion.Union( rect );
+                    PixelSelect( px, py, deselect );
 
             UpdateScaledRegion();
             Invalidate();
@@ -222,9 +242,9 @@ namespace Spryt
             myScaledRegion.Transform( new System.Drawing.Drawing2D.Matrix( Image.ZoomScale, 0.0f, 0.0f, Image.ZoomScale, 0.0f, 0.0f ) );
         }
 
-        private bool CanDraw( int x, int y )
+        private bool CanDraw( int x, int y, bool ignoreSelected = false )
         {
-            return x >= 0 && y >= 0 && x < Image.Width && y < Image.Height && ( mySelectedArea == 0 || mySelectedPixels[ x, y ] );
+            return x >= 0 && y >= 0 && x < Image.Width && y < Image.Height && ( ignoreSelected || mySelectedArea == 0 || mySelectedPixels[ x, y ] );
         }
 
         private void DrawPencil( int x, int y, Pixel pixel )
