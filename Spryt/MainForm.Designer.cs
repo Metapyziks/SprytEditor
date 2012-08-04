@@ -355,6 +355,7 @@
             this.canvasTabs.Size = new System.Drawing.Size( 805, 607 );
             this.canvasTabs.TabIndex = 6;
             this.canvasTabs.TabStop = false;
+            this.canvasTabs.TabClosed += new Spryt.CanvasTabControl.TabClosedDelegate( this.canvasTabs_TabClosed );
             // 
             // MainForm
             // 
