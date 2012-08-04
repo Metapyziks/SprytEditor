@@ -127,6 +127,7 @@
     <Content Include="Images\folder_palette.png" />
     <Content Include="Images\page.png" />
     <Content Include="Images\palette.png" />
+    <None Include="Images\shaded.png" />
     <Content Include="Images\wand.png" />
   </ItemGroup>
   <ItemGroup>

@@ -15,11 +15,17 @@ namespace Spryt
         private static readonly Brush stBackgroundBrush = new TextureBrush( Spryt.Properties.Resources.background, System.Drawing.Drawing2D.WrapMode.Tile );
         private static readonly Pen stBoxPreviewPen = new Pen( Color.FromArgb( 127, SystemColors.Highlight ) );
         private static readonly Brush stBoxPreviewBrush = new SolidBrush( Color.FromArgb( 63, SystemColors.Highlight ) );
-
+        private static readonly Brush stSelectedAreaBrush = new TextureBrush( Spryt.Properties.Resources.shaded );
         private Control myOldParent;
         private EventHandler myOnParentResizeHandler;
         private EventHandler myOnParentMouseEnterHandler;
         private EventHandler myOnParentDisposedHandler;
+
+        private bool mySelectingPixels;
+        private bool[ , ] mySelectedPixels;
+        private int mySelectedArea;
+        private Region mySelectedRegion;
+        private Region myScaledRegion;
 
         private bool myDrawingPencil;
         private bool myDrawingBox;
@@ -41,6 +47,11 @@ namespace Spryt
 
             Image = image;
             myToolPanel = toolInfoPanel;
+
+            mySelectedPixels = new bool[ image.Width, image.Height ];
+            mySelectedArea = 0;
+            mySelectedRegion = new Region( Rectangle.Empty );
+            myScaledRegion = new Region( Rectangle.Empty );
 
             Size = new Size( image.Width * 8, image.Height * 8 );
             BorderStyle = BorderStyle.FixedSingle;
@@ -96,6 +107,11 @@ namespace Spryt
 
                 switch ( myToolPanel.CurrentTool )
                 {
+                    case Tool.Area:
+                        mySelectingPixels = true;
+                        myLastDrawPos = new Point( x, y );
+                        myBoxPreview = new Rectangle( x, y, 1, 1 );
+                        break;
                     case Tool.Pencil:
                         myDrawingPencil = true;
                         myLastDrawPos = new Point( x, y );
@@ -122,6 +138,95 @@ namespace Spryt
             }
         }
 
+        protected override void OnMouseMove( MouseEventArgs e )
+        {
+            int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
+            int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+
+            if ( myDrawingPencil )
+            {
+                if ( MouseButtons.HasFlag( MouseButtons.Left ) )
+                    DrawPencil( x, y, Image.CurrentPixel );
+                else
+                    DrawPencil( x, y, Pixel.Empty );
+            }
+
+            if ( mySelectingPixels || myDrawingBox )
+                UpdateBoxPreview( x, y );
+        }
+
+        protected override void OnMouseUp( MouseEventArgs e )
+        {
+            if ( e.Button == MouseButtons.Left || e.Button == MouseButtons.Right )
+            {
+                if ( myDrawingPencil )
+                    myDrawingPencil = false;
+
+                if ( myDrawingBox || mySelectingPixels )
+                {
+                    int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
+                    int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+
+                    if ( mySelectingPixels )
+                    {
+                        SelectArea( x, y, e.Button == MouseButtons.Right );
+
+                        mySelectingPixels = false;
+                    }
+
+                    if ( myDrawingBox )
+                    {
+                        if ( e.Button == MouseButtons.Left )
+                            DrawBox( x, y, Image.CurrentPixel );
+                        else
+                            DrawBox( x, y, Pixel.Empty );
+
+                        myDrawingBox = false;
+                    }
+                }
+            }
+        }
+
+        private void SelectArea( int x, int y, bool deselect = false )
+        {
+            int left = Math.Max( Math.Min( x, myLastDrawPos.X ), 0 );
+            int right = Math.Min( Math.Max( x, myLastDrawPos.X ), Image.Width - 1 );
+            int top = Math.Max( Math.Min( y, myLastDrawPos.Y ), 0 );
+            int bottom = Math.Min( Math.Max( y, myLastDrawPos.Y ), Image.Height - 1 );
+
+            for ( int px = left; px <= right; ++px )
+            {
+                for ( int py = top; py <= bottom; ++py )
+                {
+                    if ( mySelectedPixels[ px, py ] == deselect )
+                        mySelectedArea += ( deselect ? -1 : 1 );
+
+                    mySelectedPixels[ px, py ] = !deselect;
+                }
+            }
+
+            Rectangle rect = new Rectangle( left, top, right - left + 1, bottom - top + 1 );
+
+            if ( deselect )
+                mySelectedRegion.Exclude( rect );
+            else
+                mySelectedRegion.Union( rect );
+
+            UpdateScaledRegion();
+            Invalidate();
+        }
+
+        private void UpdateScaledRegion()
+        {
+            myScaledRegion = mySelectedRegion.Clone();
+            myScaledRegion.Transform( new System.Drawing.Drawing2D.Matrix( Image.ZoomScale, 0.0f, 0.0f, Image.ZoomScale, 0.0f, 0.0f ) );
+        }
+
+        private bool CanDraw( int x, int y )
+        {
+            return x >= 0 && y >= 0 && x < Image.Width && y < Image.Height && ( mySelectedArea == 0 || mySelectedPixels[ x, y ] );
+        }
+
         private void DrawPencil( int x, int y, Pixel pixel )
         {
             LineRasterEnumerator line = new LineRasterEnumerator( myLastDrawPos, new Point( x, y ) );
@@ -130,10 +235,8 @@ namespace Spryt
                 int lx = line.Current.X;
                 int ly = line.Current.Y;
 
-                if ( lx >= 0 && ly >= 0 && lx < Image.Width && ly < Image.Height )
-                {
+                if ( CanDraw( lx, ly ) )
                     Image.Layers[ 0 ].SetPixel( lx, ly, pixel );
-                }
             }
 
             myLastDrawPos = new Point( x, y );
@@ -143,6 +246,9 @@ namespace Spryt
 
         private void Fill( int x, int y, Pixel pixel )
         {
+            if ( !CanDraw( x, y ) )
+                return;
+
             Stack<Point> stack = new Stack<Point>();
             stack.Push( new Point( x, y ) );
 
@@ -155,18 +261,14 @@ namespace Spryt
             while ( stack.Count > 0 )
             {
                 Point pos = stack.Pop();
-                if ( layer.Pixels[ pos.X, pos.Y ] == match )
+                if ( CanDraw( pos.X, pos.Y ) && layer.Pixels[ pos.X, pos.Y ] == match )
                 {
                     layer.SetPixel( pos.X, pos.Y, pixel );
 
-                    if ( pos.X > 0 )
-                        stack.Push( new Point( pos.X - 1, pos.Y ) );
-                    if ( pos.X < Image.Width - 1 )
-                        stack.Push( new Point( pos.X + 1, pos.Y ) );
-                    if ( pos.Y > 0 )
-                        stack.Push( new Point( pos.X, pos.Y - 1 ) );
-                    if ( pos.Y < Image.Height - 1 )
-                        stack.Push( new Point( pos.X, pos.Y + 1 ) );
+                    stack.Push( new Point( pos.X - 1, pos.Y ) );
+                    stack.Push( new Point( pos.X + 1, pos.Y ) );
+                    stack.Push( new Point( pos.X, pos.Y - 1 ) );
+                    stack.Push( new Point( pos.X, pos.Y + 1 ) );
                 }
             }
 
@@ -184,7 +286,8 @@ namespace Spryt
 
             for ( int px = left; px <= right; ++px )
                 for ( int py = top; py <= bottom; ++py )
-                    layer.SetPixel( px, py, pixel );
+                    if( CanDraw( px, py ) )
+                        layer.SetPixel( px, py, pixel );
 
             Invalidate();
         }
@@ -202,45 +305,6 @@ namespace Spryt
                 (int) Math.Round( ( bottom - top ) * Image.ZoomScale ) );
 
             Invalidate();
-        }
-
-        protected override void OnMouseMove( MouseEventArgs e )
-        {
-            int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
-            int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
-
-            if ( myDrawingPencil )
-            {
-                if ( MouseButtons.HasFlag( MouseButtons.Left ) )
-                    DrawPencil( x, y, Image.CurrentPixel );
-                else
-                    DrawPencil( x, y, Pixel.Empty );
-            }
-
-            if ( myDrawingBox )
-                UpdateBoxPreview( x, y );
-        }
-
-        protected override void OnMouseUp( MouseEventArgs e )
-        {
-            if ( e.Button == MouseButtons.Left || e.Button == MouseButtons.Right )
-            {
-                if ( myDrawingPencil )
-                    myDrawingPencil = false;
-
-                if ( myDrawingBox )
-                {
-                    int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
-                    int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
-
-                    if ( e.Button == MouseButtons.Left )
-                        DrawBox( x, y, Image.CurrentPixel );
-                    else
-                        DrawBox( x, y, Pixel.Empty );
-
-                    myDrawingBox = false;
-                }
-            }
         }
 
         protected override void OnParentChanged( EventArgs e )
@@ -280,9 +344,11 @@ namespace Spryt
             foreach ( Layer layer in Image.Layers )
                 e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
 
+            e.Graphics.FillRegion( stSelectedAreaBrush, myScaledRegion );
+
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
 
-            if ( myDrawingBox )
+            if ( mySelectingPixels || myDrawingBox )
             {
                 e.Graphics.FillRectangle( stBoxPreviewBrush, myBoxPreview );
                 e.Graphics.DrawRectangle( stBoxPreviewPen, myBoxPreview );

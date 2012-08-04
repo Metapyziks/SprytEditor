@@ -137,6 +137,13 @@ namespace Spryt.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap shaded {
+            get {
+                object obj = ResourceManager.GetObject("shaded", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap shading {
             get {
                 object obj = ResourceManager.GetObject("shading", resourceCulture);
