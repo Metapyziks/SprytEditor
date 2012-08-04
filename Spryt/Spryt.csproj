@@ -79,6 +79,12 @@
     <Compile Include="Pixel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ToolPanel.Designer.cs">
+      <DependentUpon>ToolPanel.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ColourPalettePanel.resx">
       <DependentUpon>ColourPalettePanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -98,6 +104,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ToolPanel.resx">
+      <DependentUpon>ToolPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -117,6 +126,7 @@
     <Content Include="Images\folder_palette.png" />
     <Content Include="Images\page.png" />
     <Content Include="Images\palette.png" />
+    <Content Include="Images\wand.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Images\cursor.png" />

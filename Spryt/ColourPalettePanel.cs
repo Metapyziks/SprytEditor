@@ -11,33 +11,6 @@ using System.IO;
 
 namespace Spryt
 {
-    public class PaletteChangedEventArgs : EventArgs
-    {
-        public readonly Color[] Palette;
-
-        public PaletteChangedEventArgs( Color[] palette )
-        {
-            Palette = palette;
-        }
-    }
-
-    public class SelectedColourChangedEventArgs : EventArgs
-    {
-        public readonly int SelectedIndex;
-        public readonly Color SelectedColour;
-
-        public Pixel SelectedPixed
-        {
-            get { return (Pixel) ( 8 | SelectedIndex ); }
-        }
-
-        public SelectedColourChangedEventArgs( ColourPalettePanel panel )
-        {
-            SelectedIndex = panel.SelectedIndex;
-            SelectedColour = panel.Palette[ panel.SelectedIndex ];
-        }
-    }
-
     public partial class ColourPalettePanel : UserControl
     {
         private static readonly int[] stDefaultPalette = new int[]
@@ -263,6 +236,33 @@ namespace Spryt
         private void presetComboBox_TextUpdate( object sender, EventArgs e )
         {
             loadBtn.Enabled = saveBtn.Enabled = deleteBtn.Enabled = presetComboBox.Text != null && presetComboBox.Text.Length > 0;
+        }
+    }
+
+    public class PaletteChangedEventArgs : EventArgs
+    {
+        public readonly Color[] Palette;
+
+        public PaletteChangedEventArgs( Color[] palette )
+        {
+            Palette = palette;
+        }
+    }
+
+    public class SelectedColourChangedEventArgs : EventArgs
+    {
+        public readonly int SelectedIndex;
+        public readonly Color SelectedColour;
+
+        public Pixel SelectedPixed
+        {
+            get { return (Pixel) ( 8 | SelectedIndex ); }
+        }
+
+        public SelectedColourChangedEventArgs( ColourPalettePanel panel )
+        {
+            SelectedIndex = panel.SelectedIndex;
+            SelectedColour = panel.Palette[ panel.SelectedIndex ];
         }
     }
 }

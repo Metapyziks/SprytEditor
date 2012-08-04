@@ -31,14 +31,14 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.presetGroup = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.loadBtn = new System.Windows.Forms.Button();
             this.presetComboBox = new System.Windows.Forms.ComboBox();
-            this.saveBtn = new System.Windows.Forms.Button();
-            this.deleteBtn = new System.Windows.Forms.Button();
             this.paletteGroup = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.selectedGroup = new System.Windows.Forms.GroupBox();
             this.selectedColourPanel = new System.Windows.Forms.Panel();
+            this.loadBtn = new System.Windows.Forms.Button();
+            this.saveBtn = new System.Windows.Forms.Button();
+            this.deleteBtn = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.presetGroup.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -96,18 +96,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size( 144, 59 );
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // loadBtn
-            // 
-            this.loadBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.loadBtn.Enabled = false;
-            this.loadBtn.Image = global::Spryt.Properties.Resources.folder_palette;
-            this.loadBtn.Location = new System.Drawing.Point( 3, 30 );
-            this.loadBtn.Name = "loadBtn";
-            this.loadBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.loadBtn.TabIndex = 4;
-            this.loadBtn.UseVisualStyleBackColor = true;
-            this.loadBtn.Click += new System.EventHandler( this.loadBtn_Click );
-            // 
             // presetComboBox
             // 
             this.tableLayoutPanel1.SetColumnSpan( this.presetComboBox, 3 );
@@ -121,30 +109,6 @@
             this.presetComboBox.SelectionChangeCommitted += new System.EventHandler( this.presetComboBox_TextUpdate );
             this.presetComboBox.TextUpdate += new System.EventHandler( this.presetComboBox_TextUpdate );
             this.presetComboBox.SelectedValueChanged += new System.EventHandler( this.presetComboBox_TextUpdate );
-            // 
-            // saveBtn
-            // 
-            this.saveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveBtn.Enabled = false;
-            this.saveBtn.Image = global::Spryt.Properties.Resources.disk;
-            this.saveBtn.Location = new System.Drawing.Point( 51, 30 );
-            this.saveBtn.Name = "saveBtn";
-            this.saveBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.saveBtn.TabIndex = 1;
-            this.saveBtn.UseVisualStyleBackColor = true;
-            this.saveBtn.Click += new System.EventHandler( this.saveBtn_Click );
-            // 
-            // deleteBtn
-            // 
-            this.deleteBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deleteBtn.Enabled = false;
-            this.deleteBtn.Image = global::Spryt.Properties.Resources.delete;
-            this.deleteBtn.Location = new System.Drawing.Point( 99, 30 );
-            this.deleteBtn.Name = "deleteBtn";
-            this.deleteBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.deleteBtn.TabIndex = 2;
-            this.deleteBtn.UseVisualStyleBackColor = true;
-            this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
             // 
             // paletteGroup
             // 
@@ -180,9 +144,10 @@
             // selectedGroup
             // 
             this.selectedGroup.Controls.Add( this.selectedColourPanel );
+            this.selectedGroup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.selectedGroup.Location = new System.Drawing.Point( 3, 3 );
             this.selectedGroup.Name = "selectedGroup";
-            this.selectedGroup.Size = new System.Drawing.Size( 144, 58 );
+            this.selectedGroup.Size = new System.Drawing.Size( 150, 58 );
             this.selectedGroup.TabIndex = 4;
             this.selectedGroup.TabStop = false;
             this.selectedGroup.Text = "Selected Colour";
@@ -194,8 +159,44 @@
             this.selectedColourPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.selectedColourPanel.Location = new System.Drawing.Point( 3, 16 );
             this.selectedColourPanel.Name = "selectedColourPanel";
-            this.selectedColourPanel.Size = new System.Drawing.Size( 138, 39 );
+            this.selectedColourPanel.Size = new System.Drawing.Size( 144, 39 );
             this.selectedColourPanel.TabIndex = 0;
+            // 
+            // loadBtn
+            // 
+            this.loadBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.loadBtn.Enabled = false;
+            this.loadBtn.Image = global::Spryt.Properties.Resources.folder_palette;
+            this.loadBtn.Location = new System.Drawing.Point( 3, 30 );
+            this.loadBtn.Name = "loadBtn";
+            this.loadBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.loadBtn.TabIndex = 4;
+            this.loadBtn.UseVisualStyleBackColor = true;
+            this.loadBtn.Click += new System.EventHandler( this.loadBtn_Click );
+            // 
+            // saveBtn
+            // 
+            this.saveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.saveBtn.Enabled = false;
+            this.saveBtn.Image = global::Spryt.Properties.Resources.disk;
+            this.saveBtn.Location = new System.Drawing.Point( 51, 30 );
+            this.saveBtn.Name = "saveBtn";
+            this.saveBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.saveBtn.TabIndex = 1;
+            this.saveBtn.UseVisualStyleBackColor = true;
+            this.saveBtn.Click += new System.EventHandler( this.saveBtn_Click );
+            // 
+            // deleteBtn
+            // 
+            this.deleteBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deleteBtn.Enabled = false;
+            this.deleteBtn.Image = global::Spryt.Properties.Resources.delete;
+            this.deleteBtn.Location = new System.Drawing.Point( 99, 30 );
+            this.deleteBtn.Name = "deleteBtn";
+            this.deleteBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.deleteBtn.TabIndex = 2;
+            this.deleteBtn.UseVisualStyleBackColor = true;
+            this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
             // 
             // ColourPalettePanel
             // 
