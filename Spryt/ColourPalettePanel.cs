@@ -250,6 +250,9 @@ namespace Spryt
             int index = Array.IndexOf( myColourBtns, ( editHexStrip.SourceControl as RadioButton ) );
             myNewColour = Palette[ index ];
             SetColour( index, myOriginalColour );
+
+            if ( PaletteChanged != null )
+                PaletteChanged( this, new PaletteChangedEventArgs( Palette ) );
         }
 
         private void editHexTxt_TextChanged( object sender, EventArgs e )
@@ -277,6 +280,9 @@ namespace Spryt
                     b = int.Parse( editHexTxt.Text.Substring( 4, 2 ), System.Globalization.NumberStyles.HexNumber );
 
                 SetColour( index, Color.FromArgb( r, g, b ) );
+
+                if ( PaletteChanged != null )
+                    PaletteChanged( this, new PaletteChangedEventArgs( Palette ) );
             }
         }
 
@@ -284,6 +290,9 @@ namespace Spryt
         {
             int index = Array.IndexOf( myColourBtns, ( editHexStrip.SourceControl as RadioButton ) );
             SetColour( index, myNewColour );
+
+            if ( PaletteChanged != null )
+                PaletteChanged( this, new PaletteChangedEventArgs( Palette ) );
         }
     }
 

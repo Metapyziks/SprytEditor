@@ -109,6 +109,7 @@ namespace Spryt
             newImage.ZoomScale = ZoomScale;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
+            canvasTabs.SelectedIndex = myCurrentImages.IndexOf( newImage );
             return newImage;
         }
 
