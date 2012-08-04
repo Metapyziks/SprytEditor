@@ -185,7 +185,7 @@ namespace Spryt
             if ( dialog.ShowDialog() == DialogResult.OK )
             {
                 Bitmap bmp = new Bitmap( dialog.FileName );
-                String trimmedName = Path.GetFileName( dialog.FileName );
+                String trimmedName = Path.GetFileNameWithoutExtension( dialog.FileName );
                 ImageInfo image = CreateNewImage( bmp.Width, bmp.Height, trimmedName );
 
                 Dictionary<Color, int> colours = new Dictionary<Color, int>();

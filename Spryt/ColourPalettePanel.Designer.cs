@@ -28,22 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.presetGroup = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.loadBtn = new System.Windows.Forms.Button();
             this.presetComboBox = new System.Windows.Forms.ComboBox();
+            this.saveBtn = new System.Windows.Forms.Button();
+            this.deleteBtn = new System.Windows.Forms.Button();
             this.paletteGroup = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.selectedGroup = new System.Windows.Forms.GroupBox();
             this.selectedColourPanel = new System.Windows.Forms.Panel();
-            this.loadBtn = new System.Windows.Forms.Button();
-            this.saveBtn = new System.Windows.Forms.Button();
-            this.deleteBtn = new System.Windows.Forms.Button();
+            this.editHexStrip = new System.Windows.Forms.ContextMenuStrip( this.components );
+            this.editHexTxt = new System.Windows.Forms.ToolStripTextBox();
+            this.oKToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel2.SuspendLayout();
             this.presetGroup.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.paletteGroup.SuspendLayout();
             this.selectedGroup.SuspendLayout();
+            this.editHexStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel2
@@ -96,6 +101,18 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size( 144, 59 );
             this.tableLayoutPanel1.TabIndex = 0;
             // 
+            // loadBtn
+            // 
+            this.loadBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.loadBtn.Enabled = false;
+            this.loadBtn.Image = global::Spryt.Properties.Resources.folder_palette;
+            this.loadBtn.Location = new System.Drawing.Point( 3, 30 );
+            this.loadBtn.Name = "loadBtn";
+            this.loadBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.loadBtn.TabIndex = 4;
+            this.loadBtn.UseVisualStyleBackColor = true;
+            this.loadBtn.Click += new System.EventHandler( this.loadBtn_Click );
+            // 
             // presetComboBox
             // 
             this.tableLayoutPanel1.SetColumnSpan( this.presetComboBox, 3 );
@@ -109,6 +126,30 @@
             this.presetComboBox.SelectionChangeCommitted += new System.EventHandler( this.presetComboBox_TextUpdate );
             this.presetComboBox.TextUpdate += new System.EventHandler( this.presetComboBox_TextUpdate );
             this.presetComboBox.SelectedValueChanged += new System.EventHandler( this.presetComboBox_TextUpdate );
+            // 
+            // saveBtn
+            // 
+            this.saveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.saveBtn.Enabled = false;
+            this.saveBtn.Image = global::Spryt.Properties.Resources.disk;
+            this.saveBtn.Location = new System.Drawing.Point( 51, 30 );
+            this.saveBtn.Name = "saveBtn";
+            this.saveBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.saveBtn.TabIndex = 1;
+            this.saveBtn.UseVisualStyleBackColor = true;
+            this.saveBtn.Click += new System.EventHandler( this.saveBtn_Click );
+            // 
+            // deleteBtn
+            // 
+            this.deleteBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deleteBtn.Enabled = false;
+            this.deleteBtn.Image = global::Spryt.Properties.Resources.delete;
+            this.deleteBtn.Location = new System.Drawing.Point( 99, 30 );
+            this.deleteBtn.Name = "deleteBtn";
+            this.deleteBtn.Size = new System.Drawing.Size( 42, 26 );
+            this.deleteBtn.TabIndex = 2;
+            this.deleteBtn.UseVisualStyleBackColor = true;
+            this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
             // 
             // paletteGroup
             // 
@@ -162,41 +203,31 @@
             this.selectedColourPanel.Size = new System.Drawing.Size( 144, 39 );
             this.selectedColourPanel.TabIndex = 0;
             // 
-            // loadBtn
+            // editHexStrip
             // 
-            this.loadBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.loadBtn.Enabled = false;
-            this.loadBtn.Image = global::Spryt.Properties.Resources.folder_palette;
-            this.loadBtn.Location = new System.Drawing.Point( 3, 30 );
-            this.loadBtn.Name = "loadBtn";
-            this.loadBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.loadBtn.TabIndex = 4;
-            this.loadBtn.UseVisualStyleBackColor = true;
-            this.loadBtn.Click += new System.EventHandler( this.loadBtn_Click );
+            this.editHexStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.editHexTxt,
+            this.oKToolStripMenuItem} );
+            this.editHexStrip.Name = "editHexStrip";
+            this.editHexStrip.Size = new System.Drawing.Size( 161, 73 );
+            this.editHexStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler( this.editHexStrip_Closed );
+            this.editHexStrip.Opened += new System.EventHandler( this.editHexStrip_Opened );
             // 
-            // saveBtn
+            // editHexTxt
             // 
-            this.saveBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveBtn.Enabled = false;
-            this.saveBtn.Image = global::Spryt.Properties.Resources.disk;
-            this.saveBtn.Location = new System.Drawing.Point( 51, 30 );
-            this.saveBtn.Name = "saveBtn";
-            this.saveBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.saveBtn.TabIndex = 1;
-            this.saveBtn.UseVisualStyleBackColor = true;
-            this.saveBtn.Click += new System.EventHandler( this.saveBtn_Click );
+            this.editHexTxt.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+            this.editHexTxt.Font = new System.Drawing.Font( "Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
+            this.editHexTxt.MaxLength = 6;
+            this.editHexTxt.Name = "editHexTxt";
+            this.editHexTxt.Size = new System.Drawing.Size( 100, 23 );
+            this.editHexTxt.TextChanged += new System.EventHandler( this.editHexTxt_TextChanged );
             // 
-            // deleteBtn
+            // oKToolStripMenuItem
             // 
-            this.deleteBtn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.deleteBtn.Enabled = false;
-            this.deleteBtn.Image = global::Spryt.Properties.Resources.delete;
-            this.deleteBtn.Location = new System.Drawing.Point( 99, 30 );
-            this.deleteBtn.Name = "deleteBtn";
-            this.deleteBtn.Size = new System.Drawing.Size( 42, 26 );
-            this.deleteBtn.TabIndex = 2;
-            this.deleteBtn.UseVisualStyleBackColor = true;
-            this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
+            this.oKToolStripMenuItem.Name = "oKToolStripMenuItem";
+            this.oKToolStripMenuItem.Size = new System.Drawing.Size( 160, 22 );
+            this.oKToolStripMenuItem.Text = "Done";
+            this.oKToolStripMenuItem.Click += new System.EventHandler( this.oKToolStripMenuItem_Click );
             // 
             // ColourPalettePanel
             // 
@@ -215,6 +246,8 @@
             this.tableLayoutPanel1.ResumeLayout( false );
             this.paletteGroup.ResumeLayout( false );
             this.selectedGroup.ResumeLayout( false );
+            this.editHexStrip.ResumeLayout( false );
+            this.editHexStrip.PerformLayout();
             this.ResumeLayout( false );
             this.PerformLayout();
 
@@ -233,6 +266,9 @@
         private System.Windows.Forms.Button loadBtn;
         private System.Windows.Forms.GroupBox selectedGroup;
         private System.Windows.Forms.Panel selectedColourPanel;
+        private System.Windows.Forms.ContextMenuStrip editHexStrip;
+        private System.Windows.Forms.ToolStripTextBox editHexTxt;
+        private System.Windows.Forms.ToolStripMenuItem oKToolStripMenuItem;
 
     }
 }

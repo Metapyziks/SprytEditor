@@ -47,6 +47,9 @@ namespace Spryt
             get { return Palette[ mySelectedIndex ]; }
         }
 
+        private Color myOriginalColour;
+        private Color myNewColour;
+
         public event EventHandler<PaletteChangedEventArgs> PaletteChanged;
         public event EventHandler<SelectedColourChangedEventArgs> SelectedColourChanged;
 
@@ -72,6 +75,7 @@ namespace Spryt
                 clrBtn.Font = new Font( new FontFamily( "consolas" ), 10.0f );
                 clrBtn.TabIndex = 1;
                 clrBtn.UseVisualStyleBackColor = false;
+                clrBtn.ContextMenuStrip = editHexStrip;
 
                 clrBtn.Click += ( sender, args ) =>
                 {
@@ -200,7 +204,7 @@ namespace Spryt
 
                             line = reader.ReadLine();
                         }
-                        while ( line.Length != 7 || !Regex.IsMatch( line, "#[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]" ) );
+                        while ( line.Length != 7 || !Regex.IsMatch( line, "^#[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]$" ) );
 
                         int r = int.Parse( line.Substring( 1, 2 ), System.Globalization.NumberStyles.HexNumber );
                         int g = int.Parse( line.Substring( 3, 2 ), System.Globalization.NumberStyles.HexNumber );
@@ -231,6 +235,55 @@ namespace Spryt
         private void presetComboBox_TextUpdate( object sender, EventArgs e )
         {
             loadBtn.Enabled = saveBtn.Enabled = deleteBtn.Enabled = presetComboBox.Text != null && presetComboBox.Text.Length > 0;
+        }
+
+        private void editHexStrip_Opened( object sender, EventArgs e )
+        {
+            RadioButton btn = editHexStrip.SourceControl as RadioButton;
+            int index = Array.IndexOf( myColourBtns, btn );
+            myOriginalColour = Palette[ index ];
+            editHexTxt.Text = btn.Text.Substring( 1 );
+        }
+
+        private void editHexStrip_Closed( object sender, ToolStripDropDownClosedEventArgs e )
+        {
+            int index = Array.IndexOf( myColourBtns, ( editHexStrip.SourceControl as RadioButton ) );
+            myNewColour = Palette[ index ];
+            SetColour( index, myOriginalColour );
+        }
+
+        private void editHexTxt_TextChanged( object sender, EventArgs e )
+        {
+            int index = Array.IndexOf( myColourBtns, ( editHexStrip.SourceControl as RadioButton ) );
+            String text = editHexTxt.Text;
+
+            if ( System.Text.RegularExpressions.Regex.IsMatch( editHexTxt.Text, "^[0-9A-F]*$" ) )
+            {
+                int r = 0, g = 0, b = 0;
+
+                if( text.Length == 1 )
+                    r = int.Parse( editHexTxt.Text.Substring( 0, 1 ), System.Globalization.NumberStyles.HexNumber ) << 4;
+                else if ( text.Length >= 2 )
+                    r = int.Parse( editHexTxt.Text.Substring( 0, 2 ), System.Globalization.NumberStyles.HexNumber );
+
+                if ( text.Length == 3 )
+                    g = int.Parse( editHexTxt.Text.Substring( 2, 1 ), System.Globalization.NumberStyles.HexNumber ) << 4;
+                else if ( text.Length >= 4 )
+                    g = int.Parse( editHexTxt.Text.Substring( 2, 2 ), System.Globalization.NumberStyles.HexNumber );
+
+                if ( text.Length == 5 )
+                    b = int.Parse( editHexTxt.Text.Substring( 4, 1 ), System.Globalization.NumberStyles.HexNumber ) << 4;
+                else if ( text.Length >= 6 )
+                    b = int.Parse( editHexTxt.Text.Substring( 4, 2 ), System.Globalization.NumberStyles.HexNumber );
+
+                SetColour( index, Color.FromArgb( r, g, b ) );
+            }
+        }
+
+        private void oKToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            int index = Array.IndexOf( myColourBtns, ( editHexStrip.SourceControl as RadioButton ) );
+            SetColour( index, myNewColour );
         }
     }
 
