@@ -258,27 +258,24 @@ namespace Spryt
                         int dx = x - myAnchorPos.X;
                         int dy = y - myAnchorPos.Y;
 
-                        if ( dx != 0 || dy != 0 )
+                        for ( int px = 0; px < Image.Width; ++px )
                         {
-                            for ( int px = 0; px < Image.Width; ++px )
+                            for ( int py = 0; py < Image.Height; ++py )
                             {
-                                for ( int py = 0; py < Image.Height; ++py )
+                                int tx = px - dx;
+                                int ty = py - dy;
+
+                                if ( Image.InBounds( tx, ty ) && selected[ tx, ty ] )
                                 {
-                                    int tx = px - dx;
-                                    int ty = py - dy;
+                                    PixelSelect( px, py );
 
-                                    if ( Image.InBounds( tx, ty ) && selected[ tx, ty ] )
-                                    {
-                                        PixelSelect( px, py );
-
-                                        if( myMovingLayer )
-                                            CurrentLayer.SetPixel( px, py, myTempLayer.Pixels[ tx, ty ] );
-                                    }
+                                    if( myMovingLayer )
+                                        CurrentLayer.SetPixel( px, py, myTempLayer.Pixels[ tx, ty ] );
                                 }
                             }
-
-                            CurrentLayer.UpdateBitmap();
                         }
+
+                        CurrentLayer.UpdateBitmap();
                     }
 
                     myTempLayer = null;
