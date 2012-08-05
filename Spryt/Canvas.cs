@@ -26,6 +26,7 @@ namespace Spryt
 
         private Point myAnchorPos;
 
+        private bool myMovingSelected;
         private bool myMovingLayer;
         private Layer myTempLayer;
         private RectangleF myMovedRect;
@@ -65,7 +66,7 @@ namespace Spryt
 
             myCurrentLayerIndex = 0;
 
-            myMovingLayer = false;
+            myMovingSelected = false;
             mySelectingPixels = false;
             myDrawingPencil = false;
             myDrawingBox = false;
@@ -124,6 +125,25 @@ namespace Spryt
             Focus();
         }
 
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.Delete:
+                    if ( mySelectedArea != 0 )
+                    {
+                        for ( int x = 0; x < Image.Width; ++x )
+                            for ( int y = 0; y < Image.Height; ++y )
+                                if ( mySelectedPixels[ x, y ] )
+                                    CurrentLayer.SetPixel( x, y, Pixel.Empty );
+
+                        CurrentLayer.UpdateBitmap();
+                        Invalidate();
+                    }
+                    break;
+            }
+        }
+
         protected override void OnMouseDown( MouseEventArgs e )
         {
             if ( e.Button == MouseButtons.Left || e.Button == MouseButtons.Right )
@@ -131,12 +151,26 @@ namespace Spryt
                 int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
                 int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
+                if( !Image.InBounds( x, y ) )
+                    return;
+
                 switch ( myToolPanel.CurrentTool )
                 {
                     case Tool.Select:
-                        myMovingLayer = true;
-                        myTempLayer = null;
-                        myAnchorPos = new Point( x, y );
+                        if ( e.Button == MouseButtons.Left )
+                        {
+                            if ( mySelectedPixels[ x, y ] || ( mySelectedArea == 0 && CurrentLayer.Pixels[ x, y ] != Pixel.Empty ) )
+                            {
+                                myMovingSelected = myMovingLayer = true;
+                                myTempLayer = null;
+                                myAnchorPos = new Point( x, y );
+                            }
+                        }
+                        else if( mySelectedPixels[ x, y ] )
+                        {
+                            myMovingSelected = true;
+                            myAnchorPos = new Point( x, y );
+                        }
                         break;
                     case Tool.Wand:
                         WandSelect( x, y, e.Button == MouseButtons.Right );
@@ -169,9 +203,9 @@ namespace Spryt
             int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
             int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
-            if ( myMovingLayer )
+            if ( myMovingSelected )
             {
-                if ( myTempLayer == null && ( x != myAnchorPos.X || y != myAnchorPos.Y ) )
+                if ( myMovingLayer && myTempLayer == null && ( x != myAnchorPos.X || y != myAnchorPos.Y ) )
                 {
                     myTempLayer = new Layer( Image );
                     bool noSelection = mySelectedArea == 0;
@@ -191,8 +225,7 @@ namespace Spryt
                     }
                 }
 
-                if ( myTempLayer != null )
-                    UpdateMovedRect( x, y );
+                UpdateMovedRect( x, y );
             }
 
             if ( myDrawingPencil )
@@ -214,35 +247,43 @@ namespace Spryt
                 int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
                 int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
 
-                if ( myMovingLayer )
+                if ( myMovingSelected )
                 {
-                    if ( myTempLayer != null )
+                    if ( myTempLayer != null || !myMovingLayer )
                     {
+                        bool[,] selected = (bool[,]) mySelectedPixels.Clone();
+
                         AllSelect( true );
 
                         int dx = x - myAnchorPos.X;
                         int dy = y - myAnchorPos.Y;
 
-                        for ( int px = 0; px < Image.Width; ++px )
+                        if ( dx != 0 || dy != 0 )
                         {
-                            for ( int py = 0; py < Image.Height; ++py )
+                            for ( int px = 0; px < Image.Width; ++px )
                             {
-                                int tx = px - dx;
-                                int ty = py - dy;
-
-                                if ( Image.InBounds( tx, ty ) && myTempLayer.Pixels[ tx, ty ] != Pixel.Empty )
+                                for ( int py = 0; py < Image.Height; ++py )
                                 {
-                                    PixelSelect( px, py );
-                                    CurrentLayer.SetPixel( px, py, myTempLayer.Pixels[ tx, ty ] );
+                                    int tx = px - dx;
+                                    int ty = py - dy;
+
+                                    if ( Image.InBounds( tx, ty ) && selected[ tx, ty ] )
+                                    {
+                                        PixelSelect( px, py );
+
+                                        if( myMovingLayer )
+                                            CurrentLayer.SetPixel( px, py, myTempLayer.Pixels[ tx, ty ] );
+                                    }
                                 }
                             }
-                        }
 
-                        CurrentLayer.UpdateBitmap();
+                            CurrentLayer.UpdateBitmap();
+                        }
                     }
 
                     myTempLayer = null;
                     myMovingLayer = false;
+                    myMovingSelected = false;
 
                     Invalidate();
                 }
@@ -473,7 +514,7 @@ namespace Spryt
             {
                 e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
 
-                if ( myMovingLayer && layer == CurrentLayer )
+                if ( myMovingLayer && myTempLayer != null && layer == CurrentLayer )
                     e.Graphics.DrawImage( myTempLayer.Bitmap, myMovedRect, srcRect, GraphicsUnit.Pixel );
             }
 
