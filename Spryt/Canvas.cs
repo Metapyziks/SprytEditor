@@ -16,11 +16,19 @@ namespace Spryt
         private static readonly Pen stBoxPreviewPen = new Pen( Color.FromArgb( 127, SystemColors.Highlight ) );
         private static readonly Brush stBoxPreviewBrush = new SolidBrush( Color.FromArgb( 63, SystemColors.Highlight ) );
         private static readonly Brush stSelectedAreaBrush = new TextureBrush( Spryt.Properties.Resources.shaded );
+
         private Control myOldParent;
         private EventHandler myOnParentResizeHandler;
         private EventHandler myOnParentMouseEnterHandler;
         private EventHandler myOnParentDisposedHandler;
 
+        private int myCurrentLayerIndex;
+
+        private Point myAnchorPos;
+
+        private bool myMovingLayer;
+        private Layer myTempLayer;
+        private RectangleF myMovedRect;
         private bool mySelectingPixels;
         private bool[ , ] mySelectedPixels;
         private int mySelectedArea;
@@ -29,12 +37,25 @@ namespace Spryt
 
         private bool myDrawingPencil;
         private bool myDrawingBox;
-        private Point myLastDrawPos;
         private Rectangle myBoxPreview;
 
         private ToolPanel myToolPanel;
 
         internal readonly ImageInfo Image;
+
+        public int CurrentLayerIndex
+        {
+            get { return myCurrentLayerIndex; }
+            set
+            {
+                myCurrentLayerIndex = value;
+            }
+        }
+        public Layer CurrentLayer
+        {
+            get { return Image.Layers[ myCurrentLayerIndex ]; }
+            set { CurrentLayerIndex = Image.Layers.IndexOf( value ); }
+        }
 
         public Canvas( ImageInfo image, ToolPanel toolInfoPanel )
         {
@@ -42,6 +63,10 @@ namespace Spryt
             myOnParentMouseEnterHandler = new EventHandler( OnParentMouseEnter );
             myOnParentDisposedHandler = new EventHandler( OnParentDisposed );
 
+            myCurrentLayerIndex = 0;
+
+            myMovingLayer = false;
+            mySelectingPixels = false;
             myDrawingPencil = false;
             myDrawingBox = false;
 
@@ -73,6 +98,7 @@ namespace Spryt
                 (int) Math.Round( Image.Height * Image.ZoomScale ) );
             Centre();
 
+            UpdateScaledRegion();
             Invalidate();
         }
 
@@ -107,17 +133,22 @@ namespace Spryt
 
                 switch ( myToolPanel.CurrentTool )
                 {
+                    case Tool.Select:
+                        myMovingLayer = true;
+                        myTempLayer = null;
+                        myAnchorPos = new Point( x, y );
+                        break;
                     case Tool.Wand:
                         WandSelect( x, y, e.Button == MouseButtons.Right );
                         break;
                     case Tool.Area:
                         mySelectingPixels = true;
-                        myLastDrawPos = new Point( x, y );
+                        myAnchorPos = new Point( x, y );
                         myBoxPreview = new Rectangle( x, y, 1, 1 );
                         break;
                     case Tool.Pencil:
                         myDrawingPencil = true;
-                        myLastDrawPos = new Point( x, y );
+                        myAnchorPos = new Point( x, y );
 
                         DrawPencil( x, y, e.Button == MouseButtons.Left ? Image.CurrentPixel : Pixel.Empty );
                         break;
@@ -126,7 +157,7 @@ namespace Spryt
                         break;
                     case Tool.Box:
                         myDrawingBox = true;
-                        myLastDrawPos = new Point( x, y );
+                        myAnchorPos = new Point( x, y );
                         myBoxPreview = new Rectangle( x, y, 1, 1 );
                         break;
                 }
@@ -137,6 +168,32 @@ namespace Spryt
         {
             int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
             int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+
+            if ( myMovingLayer )
+            {
+                if ( myTempLayer == null && ( x != myAnchorPos.X || y != myAnchorPos.Y ) )
+                {
+                    myTempLayer = new Layer( Image );
+                    bool noSelection = mySelectedArea == 0;
+                    for ( int px = 0; px < Image.Width; ++px )
+                    {
+                        for ( int py = 0; py < Image.Height; ++py )
+                        {
+                            if ( noSelection || mySelectedPixels[ px, py ] )
+                            {
+                                PixelSelect( px, py, CurrentLayer.Pixels[ px, py ] == Pixel.Empty );
+                                myTempLayer.SetPixel( px, py, CurrentLayer.Pixels[ px, py ] );
+
+                                if( !ModifierKeys.HasFlag( Keys.Control ) )
+                                    CurrentLayer.SetPixel( px, py, Pixel.Empty );
+                            }
+                        }
+                    }
+                }
+
+                if ( myTempLayer != null )
+                    UpdateMovedRect( x, y );
+            }
 
             if ( myDrawingPencil )
             {
@@ -154,14 +211,47 @@ namespace Spryt
         {
             if ( e.Button == MouseButtons.Left || e.Button == MouseButtons.Right )
             {
+                int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
+                int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
+
+                if ( myMovingLayer )
+                {
+                    if ( myTempLayer != null )
+                    {
+                        AllSelect( true );
+
+                        int dx = x - myAnchorPos.X;
+                        int dy = y - myAnchorPos.Y;
+
+                        for ( int px = 0; px < Image.Width; ++px )
+                        {
+                            for ( int py = 0; py < Image.Height; ++py )
+                            {
+                                int tx = px - dx;
+                                int ty = py - dy;
+
+                                if ( Image.InBounds( tx, ty ) && myTempLayer.Pixels[ tx, ty ] != Pixel.Empty )
+                                {
+                                    PixelSelect( px, py );
+                                    CurrentLayer.SetPixel( px, py, myTempLayer.Pixels[ tx, ty ] );
+                                }
+                            }
+                        }
+
+                        CurrentLayer.UpdateBitmap();
+                    }
+
+                    myTempLayer = null;
+                    myMovingLayer = false;
+
+                    Invalidate();
+                }
+
                 if ( myDrawingPencil )
                     myDrawingPencil = false;
 
                 if ( myDrawingBox || mySelectingPixels )
                 {
-                    int x = (int) ( ( e.X - ClientRectangle.Left ) / Image.ZoomScale );
-                    int y = (int) ( ( e.Y - ClientRectangle.Top ) / Image.ZoomScale );
-
                     if ( mySelectingPixels )
                     {
                         AreaSelect( x, y, e.Button == MouseButtons.Right );
@@ -182,6 +272,13 @@ namespace Spryt
             }
         }
 
+        private void AllSelect( bool deselect = false )
+        {
+            for ( int x = 0; x < Image.Width; ++x )
+                for ( int y = 0; y < Image.Height; ++y )
+                    PixelSelect( x, y, deselect );
+        }
+
         private void PixelSelect( int x, int y, bool deselect = false )
         {
             if ( mySelectedPixels[ x, y ] == deselect )
@@ -200,13 +297,12 @@ namespace Spryt
             Stack<Point> stack = new Stack<Point>();
             stack.Push( new Point( x, y ) );
 
-            Layer layer = Image.Layers[ 0 ];
-            Pixel match = layer.Pixels[ x, y ];
+            Pixel match = CurrentLayer.Pixels[ x, y ];
 
             while ( stack.Count > 0 )
             {
                 Point pos = stack.Pop();
-                if ( CanDraw( pos.X, pos.Y, true ) && mySelectedPixels[ pos.X, pos.Y ] == deselect && layer.Pixels[ pos.X, pos.Y ] == match )
+                if ( CanDraw( pos.X, pos.Y, true ) && mySelectedPixels[ pos.X, pos.Y ] == deselect && CurrentLayer.Pixels[ pos.X, pos.Y ] == match )
                 {
                     PixelSelect( pos.X, pos.Y, deselect );
 
@@ -223,16 +319,31 @@ namespace Spryt
 
         private void AreaSelect( int x, int y, bool deselect = false )
         {
-            int left = Math.Max( Math.Min( x, myLastDrawPos.X ), 0 );
-            int right = Math.Min( Math.Max( x, myLastDrawPos.X ), Image.Width - 1 );
-            int top = Math.Max( Math.Min( y, myLastDrawPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y, myLastDrawPos.Y ), Image.Height - 1 );
+            int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
+            int right = Math.Min( Math.Max( x, myAnchorPos.X ), Image.Width - 1 );
+            int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
+            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), Image.Height - 1 );
 
             for ( int px = left; px <= right; ++px )
                 for ( int py = top; py <= bottom; ++py )
                     PixelSelect( px, py, deselect );
 
             UpdateScaledRegion();
+            Invalidate();
+        }
+
+        private void UpdateMovedRect( int x, int y )
+        {
+            int dx = x - myAnchorPos.X;
+            int dy = y - myAnchorPos.Y;
+
+            myMovedRect = new RectangleF( ClientRectangle.X + dx * Image.ZoomScale,
+                ClientRectangle.Y + dy * Image.ZoomScale,
+                ClientRectangle.Width, ClientRectangle.Height );
+
+            UpdateScaledRegion();
+            myScaledRegion.Translate( dx * Image.ZoomScale, dy * Image.ZoomScale );
+
             Invalidate();
         }
 
@@ -244,22 +355,22 @@ namespace Spryt
 
         private bool CanDraw( int x, int y, bool ignoreSelected = false )
         {
-            return x >= 0 && y >= 0 && x < Image.Width && y < Image.Height && ( ignoreSelected || mySelectedArea == 0 || mySelectedPixels[ x, y ] );
+            return Image.InBounds( x, y ) && ( ignoreSelected || mySelectedArea == 0 || mySelectedPixels[ x, y ] );
         }
 
         private void DrawPencil( int x, int y, Pixel pixel )
         {
-            LineRasterEnumerator line = new LineRasterEnumerator( myLastDrawPos, new Point( x, y ) );
+            LineRasterEnumerator line = new LineRasterEnumerator( myAnchorPos, new Point( x, y ) );
             while ( line.MoveNext() )
             {
                 int lx = line.Current.X;
                 int ly = line.Current.Y;
 
                 if ( CanDraw( lx, ly ) )
-                    Image.Layers[ 0 ].SetPixel( lx, ly, pixel );
+                    CurrentLayer.SetPixel( lx, ly, pixel );
             }
 
-            myLastDrawPos = new Point( x, y );
+            myAnchorPos = new Point( x, y );
 
             Invalidate();
         }
@@ -272,8 +383,7 @@ namespace Spryt
             Stack<Point> stack = new Stack<Point>();
             stack.Push( new Point( x, y ) );
 
-            Layer layer = Image.Layers[ 0 ];
-            Pixel match = layer.Pixels[ x, y ];
+            Pixel match = CurrentLayer.Pixels[ x, y ];
 
             if ( match == pixel )
                 return;
@@ -281,9 +391,9 @@ namespace Spryt
             while ( stack.Count > 0 )
             {
                 Point pos = stack.Pop();
-                if ( CanDraw( pos.X, pos.Y ) && layer.Pixels[ pos.X, pos.Y ] == match )
+                if ( CanDraw( pos.X, pos.Y ) && CurrentLayer.Pixels[ pos.X, pos.Y ] == match )
                 {
-                    layer.SetPixel( pos.X, pos.Y, pixel );
+                    CurrentLayer.SetPixel( pos.X, pos.Y, pixel );
 
                     stack.Push( new Point( pos.X - 1, pos.Y ) );
                     stack.Push( new Point( pos.X + 1, pos.Y ) );
@@ -297,27 +407,25 @@ namespace Spryt
 
         private void DrawBox( int x, int y, Pixel pixel )
         {
-            int left = Math.Max( Math.Min( x, myLastDrawPos.X ), 0 );
-            int right = Math.Min( Math.Max( x, myLastDrawPos.X ), Image.Width - 1 );
-            int top = Math.Max( Math.Min( y, myLastDrawPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y, myLastDrawPos.Y ), Image.Height - 1 );
-
-            Layer layer = Image.Layers[ 0 ];
-
+            int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
+            int right = Math.Min( Math.Max( x, myAnchorPos.X ), Image.Width - 1 );
+            int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
+            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), Image.Height - 1 );
+            
             for ( int px = left; px <= right; ++px )
                 for ( int py = top; py <= bottom; ++py )
                     if( CanDraw( px, py ) )
-                        layer.SetPixel( px, py, pixel );
+                        CurrentLayer.SetPixel( px, py, pixel );
 
             Invalidate();
         }
 
         private void UpdateBoxPreview( int x, int y )
         {
-            int left = Math.Max( Math.Min( x, myLastDrawPos.X ), 0 );
-            int right = Math.Min( Math.Max( x + 1, myLastDrawPos.X + 1 ), Image.Width );
-            int top = Math.Max( Math.Min( y, myLastDrawPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y + 1, myLastDrawPos.Y + 1 ), Image.Height );
+            int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
+            int right = Math.Min( Math.Max( x + 1, myAnchorPos.X + 1 ), Image.Width );
+            int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
+            int bottom = Math.Min( Math.Max( y + 1, myAnchorPos.Y + 1 ), Image.Height );
 
             myBoxPreview = new Rectangle( (int) Math.Round( left * Image.ZoomScale ),
                 (int) Math.Round( top * Image.ZoomScale ),
@@ -362,7 +470,12 @@ namespace Spryt
             RectangleF srcRect = new RectangleF( -0.5f, -0.5f, Image.Width, Image.Height );
 
             foreach ( Layer layer in Image.Layers )
+            {
                 e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
+
+                if ( myMovingLayer && layer == CurrentLayer )
+                    e.Graphics.DrawImage( myTempLayer.Bitmap, myMovedRect, srcRect, GraphicsUnit.Pixel );
+            }
 
             e.Graphics.FillRegion( stSelectedAreaBrush, myScaledRegion );
 

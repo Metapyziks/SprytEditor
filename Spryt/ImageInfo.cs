@@ -89,5 +89,10 @@ namespace Spryt
             Layers = new List<Layer>();
             Layers.Add( new Layer( this ) );
         }
+
+        public bool InBounds( int x, int y )
+        {
+            return x >= 0 && y >= 0 && x < Width && y < Height;
+        }
     }
 }
