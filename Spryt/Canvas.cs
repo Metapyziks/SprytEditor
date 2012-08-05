@@ -58,6 +58,8 @@ namespace Spryt
             set { CurrentLayerIndex = Image.Layers.IndexOf( value ); }
         }
 
+        public event EventHandler ImageChanged;
+
         public Canvas( ImageInfo image, ToolPanel toolInfoPanel )
         {
             myOnParentResizeHandler = new EventHandler( OnParentResize );
@@ -125,6 +127,14 @@ namespace Spryt
             Focus();
         }
 
+        private void SendImageChange()
+        {
+            Invalidate();
+
+            if ( ImageChanged != null )
+                ImageChanged( this, new EventArgs() );
+        }
+
         protected override void OnKeyDown( KeyEventArgs e )
         {
             switch ( e.KeyCode )
@@ -137,8 +147,7 @@ namespace Spryt
                                 if ( mySelectedPixels[ x, y ] )
                                     CurrentLayer.SetPixel( x, y, Pixel.Empty );
 
-                        CurrentLayer.UpdateBitmap();
-                        Invalidate();
+                        SendImageChange();
                     }
                     break;
             }
@@ -274,15 +283,13 @@ namespace Spryt
                                 }
                             }
                         }
-
-                        CurrentLayer.UpdateBitmap();
                     }
 
                     myTempLayer = null;
                     myMovingLayer = false;
                     myMovingSelected = false;
 
-                    Invalidate();
+                    SendImageChange();
                 }
 
                 if ( myDrawingPencil )
@@ -410,7 +417,7 @@ namespace Spryt
 
             myAnchorPos = new Point( x, y );
 
-            Invalidate();
+            SendImageChange();
         }
 
         private void Fill( int x, int y, Pixel pixel )
@@ -440,7 +447,7 @@ namespace Spryt
                 }
             }
 
-            Invalidate();
+            SendImageChange();
         }
 
         private void DrawBox( int x, int y, Pixel pixel )
@@ -455,7 +462,7 @@ namespace Spryt
                     if( CanDraw( px, py ) )
                         CurrentLayer.SetPixel( px, py, pixel );
 
-            Invalidate();
+            SendImageChange();
         }
 
         private void UpdateBoxPreview( int x, int y )

@@ -63,6 +63,12 @@
     </Compile>
     <Compile Include="ImageInfo.cs" />
     <Compile Include="Layer.cs" />
+    <Compile Include="LayerPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LayerPanel.Designer.cs">
+      <DependentUpon>LayerPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="LineRasterEnumerator.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -77,6 +83,15 @@
       <DependentUpon>NewImageDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Pixel.cs" />
+    <Compile Include="PreviewDisplayPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PreviewPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PreviewPanel.Designer.cs">
+      <DependentUpon>PreviewPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool.cs" />
@@ -89,11 +104,17 @@
     <EmbeddedResource Include="ColourPalettePanel.resx">
       <DependentUpon>ColourPalettePanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LayerPanel.resx">
+      <DependentUpon>LayerPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewImageDialog.resx">
       <DependentUpon>NewImageDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PreviewPanel.resx">
+      <DependentUpon>PreviewPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -119,6 +140,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\add.png" />
+    <Content Include="Images\arrow_down.png" />
+    <Content Include="Images\arrow_up.png" />
     <Content Include="Images\background.png" />
     <Content Include="Images\color_wheel.png" />
     <Content Include="Images\cross.png" />

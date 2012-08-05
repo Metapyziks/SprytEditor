@@ -66,6 +66,8 @@
             this.colourPalettePanel = new Spryt.ColourPalettePanel();
             this.toolPanel = new Spryt.ToolPanel();
             this.canvasTabs = new Spryt.CanvasTabControl();
+            this.layerPanel = new Spryt.LayerPanel();
+            this.previewPanel = new Spryt.PreviewPanel();
             this.menuStrip.SuspendLayout();
             this.mainLayoutTable.SuspendLayout();
             this.SuspendLayout();
@@ -279,7 +281,7 @@
             // 
             // statusStrip
             // 
-            this.statusStrip.Location = new System.Drawing.Point( 0, 631 );
+            this.statusStrip.Location = new System.Drawing.Point( 0, 685 );
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size( 973, 22 );
             this.statusStrip.TabIndex = 3;
@@ -306,24 +308,26 @@
             this.mainLayoutTable.ColumnCount = 3;
             this.mainLayoutTable.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
             this.mainLayoutTable.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
-            this.mainLayoutTable.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 156F ) );
+            this.mainLayoutTable.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 162F ) );
             this.mainLayoutTable.Controls.Add( this.colourPalettePanel, 0, 1 );
             this.mainLayoutTable.Controls.Add( this.toolPanel, 0, 0 );
             this.mainLayoutTable.Controls.Add( this.canvasTabs, 1, 0 );
+            this.mainLayoutTable.Controls.Add( this.layerPanel, 2, 1 );
+            this.mainLayoutTable.Controls.Add( this.previewPanel, 2, 0 );
             this.mainLayoutTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainLayoutTable.Location = new System.Drawing.Point( 0, 24 );
             this.mainLayoutTable.Name = "mainLayoutTable";
             this.mainLayoutTable.RowCount = 2;
             this.mainLayoutTable.RowStyles.Add( new System.Windows.Forms.RowStyle() );
             this.mainLayoutTable.RowStyles.Add( new System.Windows.Forms.RowStyle() );
-            this.mainLayoutTable.Size = new System.Drawing.Size( 973, 607 );
+            this.mainLayoutTable.Size = new System.Drawing.Size( 973, 661 );
             this.mainLayoutTable.TabIndex = 4;
             // 
             // colourPalettePanel
             // 
             this.colourPalettePanel.AutoSize = true;
             this.colourPalettePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.colourPalettePanel.Location = new System.Drawing.Point( 3, 169 );
+            this.colourPalettePanel.Location = new System.Drawing.Point( 3, 210 );
             this.colourPalettePanel.MaximumSize = new System.Drawing.Size( 156, 429 );
             this.colourPalettePanel.MinimumSize = new System.Drawing.Size( 156, 429 );
             this.colourPalettePanel.Name = "colourPalettePanel";
@@ -339,7 +343,7 @@
             this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolPanel.Location = new System.Drawing.Point( 3, 3 );
             this.toolPanel.Name = "toolPanel";
-            this.toolPanel.Size = new System.Drawing.Size( 156, 160 );
+            this.toolPanel.Size = new System.Drawing.Size( 156, 201 );
             this.toolPanel.TabIndex = 0;
             this.toolPanel.CurrentToolChanged += new System.EventHandler<Spryt.CurrentToolChangedEventArgs>( this.toolPanel_CurrentToolChanged );
             // 
@@ -354,17 +358,35 @@
             this.canvasTabs.Padding = new System.Drawing.Point( 16, 0 );
             this.mainLayoutTable.SetRowSpan( this.canvasTabs, 2 );
             this.canvasTabs.SelectedIndex = 0;
-            this.canvasTabs.Size = new System.Drawing.Size( 649, 607 );
+            this.canvasTabs.Size = new System.Drawing.Size( 643, 655 );
             this.canvasTabs.TabIndex = 6;
             this.canvasTabs.TabStop = false;
             this.canvasTabs.TabClosed += new Spryt.CanvasTabControl.TabClosedDelegate( this.canvasTabs_TabClosed );
             this.canvasTabs.SelectedIndexChanged += new System.EventHandler( this.canvasTabs_SelectedIndexChanged );
             // 
+            // layerPanel
+            // 
+            this.layerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layerPanel.Enabled = false;
+            this.layerPanel.Location = new System.Drawing.Point( 814, 210 );
+            this.layerPanel.Name = "layerPanel";
+            this.layerPanel.Size = new System.Drawing.Size( 156, 448 );
+            this.layerPanel.TabIndex = 7;
+            // 
+            // previewPanel
+            // 
+            this.previewPanel.AutoSize = true;
+            this.previewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewPanel.Location = new System.Drawing.Point( 814, 3 );
+            this.previewPanel.Name = "previewPanel";
+            this.previewPanel.Size = new System.Drawing.Size( 156, 201 );
+            this.previewPanel.TabIndex = 8;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 973, 653 );
+            this.ClientSize = new System.Drawing.Size( 973, 707 );
             this.Controls.Add( this.mainLayoutTable );
             this.Controls.Add( this.statusStrip );
             this.Controls.Add( this.menuStrip );
@@ -418,6 +440,8 @@
         private ColourPalettePanel colourPalettePanel;
         private ToolPanel toolPanel;
         private CanvasTabControl canvasTabs;
+        private LayerPanel layerPanel;
+        private PreviewPanel previewPanel;
 
     }
 }

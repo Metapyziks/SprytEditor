@@ -109,8 +109,14 @@ namespace Spryt
             newImage.ZoomScale = ZoomScale;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
-            canvasTabs.SelectedIndex = myCurrentImages.IndexOf( newImage );
+            ChangeImage( newImage );
             return newImage;
+        }
+
+        private void ChangeImage( ImageInfo image )
+        {
+            previewPanel.SetImage( image );
+            canvasTabs.SelectedIndex = myCurrentImages.IndexOf( image );
         }
 
         protected override void OnMouseWheel( MouseEventArgs e )
@@ -157,6 +163,8 @@ namespace Spryt
 
         private void canvasTabs_SelectedIndexChanged( object sender, EventArgs e )
         {
+            previewPanel.SetImage( CurrentImage );
+
             if ( CurrentImage != null )
             {
                 colourPalettePanel.SetPalette( (Color[]) CurrentImage.Palette.Clone() );
