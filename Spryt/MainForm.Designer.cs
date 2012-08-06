@@ -51,6 +51,7 @@
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showGridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tiledViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.areaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -196,10 +197,12 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.zoomToolStripMenuItem,
-            this.gridToolStripMenuItem} );
+            this.gridToolStripMenuItem,
+            this.tiledViewToolStripMenuItem} );
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size( 44, 20 );
             this.viewToolStripMenuItem.Text = "View";
+            this.viewToolStripMenuItem.DropDownOpening += new System.EventHandler( this.viewToolStripMenuItem_DropDownOpening );
             // 
             // zoomToolStripMenuItem
             // 
@@ -220,16 +223,23 @@
             // 
             this.showGridToolStripMenuItem.CheckOnClick = true;
             this.showGridToolStripMenuItem.Name = "showGridToolStripMenuItem";
-            this.showGridToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.showGridToolStripMenuItem.Size = new System.Drawing.Size( 141, 22 );
             this.showGridToolStripMenuItem.Text = "Show Grid";
             this.showGridToolStripMenuItem.Click += new System.EventHandler( this.showGridToolStripMenuItem_Click );
             // 
             // gridSizeToolStripMenuItem
             // 
             this.gridSizeToolStripMenuItem.Name = "gridSizeToolStripMenuItem";
-            this.gridSizeToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.gridSizeToolStripMenuItem.Size = new System.Drawing.Size( 141, 22 );
             this.gridSizeToolStripMenuItem.Text = "Grid Options";
             this.gridSizeToolStripMenuItem.Click += new System.EventHandler( this.gridSizeToolStripMenuItem_Click );
+            // 
+            // tiledViewToolStripMenuItem
+            // 
+            this.tiledViewToolStripMenuItem.CheckOnClick = true;
+            this.tiledViewToolStripMenuItem.Name = "tiledViewToolStripMenuItem";
+            this.tiledViewToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.tiledViewToolStripMenuItem.Text = "Tiled View";
             // 
             // toolsToolStripMenuItem
             // 
@@ -452,6 +462,7 @@
         private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gridSizeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tiledViewToolStripMenuItem;
 
     }
 }

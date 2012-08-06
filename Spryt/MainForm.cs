@@ -302,5 +302,10 @@ namespace Spryt
                 CurrentImage.GridColour = dialog.GridColour;
             }
         }
+
+        private void viewToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
+        {
+            gridToolStripMenuItem.Enabled = tiledViewToolStripMenuItem.Enabled = CurrentImage != null;
+        }
     }
 }
