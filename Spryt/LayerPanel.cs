@@ -29,7 +29,7 @@ namespace Spryt
                 {
                     for ( int i = 0; i < value.Layers.Count; ++i )
                     {
-                        layerGrid.Rows.Add( null, "layer" );
+                        layerGrid.Rows.Add( null, "layer " + ( i + 1 ) );
                         layerGrid.Rows[ i ].Height = 64;
                         layerGrid[ 0, i ] = new DataGridViewLayerCell() { Value = value.Layers[ i ].Bitmap };
                     }
