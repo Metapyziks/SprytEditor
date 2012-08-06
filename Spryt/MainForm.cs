@@ -143,6 +143,10 @@ namespace Spryt
                 else if ( myZoomLevel >= stZoomLevels.Length )
                     myZoomLevel = stZoomLevels.Length - 1;
 
+                if ( ModifierKeys.HasFlag( Keys.Alt ) )
+                    foreach ( ImageInfo image in myCurrentImages )
+                        image.ZoomScale = stZoomLevels[ myZoomLevel ];
+
                 ZoomScale = stZoomLevels[ myZoomLevel ];
             }
             else if ( ModifierKeys.HasFlag( Keys.Alt ) )
