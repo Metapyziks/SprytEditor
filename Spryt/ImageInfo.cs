@@ -35,6 +35,8 @@ namespace Spryt
         private int myGridVerticalOffset;
         private Color myGridColour;
 
+        private bool myTiledView;
+
         public String FileName
         {
             get { return Path.GetFileName( FilePath ); }
@@ -174,6 +176,17 @@ namespace Spryt
                 myGridColour = value;
                 if ( Canvas != null )
                     Canvas.UpdateGrid();
+            }
+        }
+
+        public bool TiledView
+        {
+            get { return myTiledView; }
+            set
+            {
+                myTiledView = value;
+                if ( Canvas != null )
+                    Canvas.Invalidate();
             }
         }
 

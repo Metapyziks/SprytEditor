@@ -207,7 +207,7 @@
             // zoomToolStripMenuItem
             // 
             this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size( 137, 22 );
             this.zoomToolStripMenuItem.Text = "Zoom (8.0x)";
             // 
             // gridToolStripMenuItem
@@ -216,7 +216,7 @@
             this.showGridToolStripMenuItem,
             this.gridSizeToolStripMenuItem} );
             this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
-            this.gridToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size( 137, 22 );
             this.gridToolStripMenuItem.Text = "Grid";
             // 
             // showGridToolStripMenuItem
@@ -238,8 +238,9 @@
             // 
             this.tiledViewToolStripMenuItem.CheckOnClick = true;
             this.tiledViewToolStripMenuItem.Name = "tiledViewToolStripMenuItem";
-            this.tiledViewToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.tiledViewToolStripMenuItem.Size = new System.Drawing.Size( 137, 22 );
             this.tiledViewToolStripMenuItem.Text = "Tiled View";
+            this.tiledViewToolStripMenuItem.Click += new System.EventHandler( this.tiledViewToolStripMenuItem_Click );
             // 
             // toolsToolStripMenuItem
             // 

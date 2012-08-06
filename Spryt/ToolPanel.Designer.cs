@@ -74,12 +74,10 @@
             // 
             this.tableLayoutPanel2.AutoSize = true;
             this.tableLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 32F ) );
-            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 32F ) );
-            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 32F ) );
-            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 32F ) );
-            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 33.33333F ) );
+            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 33.33333F ) );
+            this.tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 33.33333F ) );
             this.tableLayoutPanel2.Controls.Add( this.label1, 0, 1 );
             this.tableLayoutPanel2.Controls.Add( this.selectBtn, 0, 0 );
             this.tableLayoutPanel2.Controls.Add( this.areaBtn, 1, 0 );
@@ -104,7 +102,7 @@
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label1.Location = new System.Drawing.Point( 3, 32 );
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size( 90, 2 );
+            this.label1.Size = new System.Drawing.Size( 138, 2 );
             this.label1.TabIndex = 1;
             // 
             // selectBtn
@@ -115,7 +113,7 @@
             this.selectBtn.Image = global::Spryt.Properties.Resources.cursor;
             this.selectBtn.Location = new System.Drawing.Point( 3, 3 );
             this.selectBtn.Name = "selectBtn";
-            this.selectBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.selectBtn.Size = new System.Drawing.Size( 41, 26 );
             this.selectBtn.TabIndex = 2;
             this.selectBtn.UseVisualStyleBackColor = true;
             // 
@@ -125,9 +123,9 @@
             this.areaBtn.AutoSize = true;
             this.areaBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.areaBtn.Image = global::Spryt.Properties.Resources.shading;
-            this.areaBtn.Location = new System.Drawing.Point( 35, 3 );
+            this.areaBtn.Location = new System.Drawing.Point( 50, 3 );
             this.areaBtn.Name = "areaBtn";
-            this.areaBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.areaBtn.Size = new System.Drawing.Size( 41, 26 );
             this.areaBtn.TabIndex = 3;
             this.areaBtn.UseVisualStyleBackColor = true;
             // 
@@ -137,9 +135,9 @@
             this.wandBtn.AutoSize = true;
             this.wandBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wandBtn.Image = global::Spryt.Properties.Resources.wand;
-            this.wandBtn.Location = new System.Drawing.Point( 67, 3 );
+            this.wandBtn.Location = new System.Drawing.Point( 97, 3 );
             this.wandBtn.Name = "wandBtn";
-            this.wandBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.wandBtn.Size = new System.Drawing.Size( 44, 26 );
             this.wandBtn.TabIndex = 4;
             this.wandBtn.UseVisualStyleBackColor = true;
             // 
@@ -151,7 +149,7 @@
             this.pencilBtn.Image = global::Spryt.Properties.Resources.pencil;
             this.pencilBtn.Location = new System.Drawing.Point( 3, 37 );
             this.pencilBtn.Name = "pencilBtn";
-            this.pencilBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.pencilBtn.Size = new System.Drawing.Size( 41, 26 );
             this.pencilBtn.TabIndex = 5;
             this.pencilBtn.UseVisualStyleBackColor = true;
             // 
@@ -161,9 +159,9 @@
             this.fillBtn.AutoSize = true;
             this.fillBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fillBtn.Image = global::Spryt.Properties.Resources.paintcan;
-            this.fillBtn.Location = new System.Drawing.Point( 67, 37 );
+            this.fillBtn.Location = new System.Drawing.Point( 97, 37 );
             this.fillBtn.Name = "fillBtn";
-            this.fillBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.fillBtn.Size = new System.Drawing.Size( 44, 26 );
             this.fillBtn.TabIndex = 6;
             this.fillBtn.UseVisualStyleBackColor = true;
             // 
@@ -173,9 +171,9 @@
             this.boxBtn.AutoSize = true;
             this.boxBtn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.boxBtn.Image = global::Spryt.Properties.Resources.shape_square;
-            this.boxBtn.Location = new System.Drawing.Point( 35, 37 );
+            this.boxBtn.Location = new System.Drawing.Point( 50, 37 );
             this.boxBtn.Name = "boxBtn";
-            this.boxBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.boxBtn.Size = new System.Drawing.Size( 41, 26 );
             this.boxBtn.TabIndex = 7;
             this.boxBtn.UseVisualStyleBackColor = true;
             // 

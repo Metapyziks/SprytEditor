@@ -307,5 +307,11 @@ namespace Spryt
         {
             gridToolStripMenuItem.Enabled = tiledViewToolStripMenuItem.Enabled = CurrentImage != null;
         }
+
+        private void tiledViewToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            if ( CurrentImage != null )
+                CurrentImage.TiledView = tiledViewToolStripMenuItem.Checked;
+        }
     }
 }
