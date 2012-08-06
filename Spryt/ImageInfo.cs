@@ -21,12 +21,19 @@ namespace Spryt
 
     class ImageInfo
     {
-        public const UInt16 Version = 0x0001;
+        public const UInt16 Version = 0x0002;
 
         private string myFilePath;
         private bool myModified;
         private Color[] myPalette;
+
         private float myZoomScale;
+        private bool myShowGrid;
+        private int myGridWidth;
+        private int myGridHeight;
+        private int myGridHorizontalOffset;
+        private int myGridVerticalOffset;
+        private Color myGridColour;
 
         public String FileName
         {
@@ -101,7 +108,72 @@ namespace Spryt
             set
             {
                 myZoomScale = value;
-                Canvas.UpdateZoomScale();
+                if( Canvas != null )
+                    Canvas.UpdateZoomScale();
+            }
+        }
+
+        public bool ShowGrid
+        {
+            get { return myShowGrid; }
+            set
+            {
+                myShowGrid = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
+            }
+        }
+
+        public int GridWidth
+        {
+            get { return myGridWidth; }
+            set
+            {
+                myGridWidth = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
+            }
+        }
+        public int GridHeight
+        {
+            get { return myGridHeight; }
+            set
+            {
+                myGridHeight = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
+            }
+        }
+
+        public int GridHorizontalOffset
+        {
+            get { return myGridHorizontalOffset; }
+            set
+            {
+                myGridHorizontalOffset = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
+            }
+        }
+        public int GridVerticalOffset
+        {
+            get { return myGridVerticalOffset; }
+            set
+            {
+                myGridVerticalOffset = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
+            }
+        }
+
+        public Color GridColour
+        {
+            get { return myGridColour; }
+            set
+            {
+                myGridColour = value;
+                if ( Canvas != null )
+                    Canvas.UpdateGrid();
             }
         }
 
@@ -109,32 +181,46 @@ namespace Spryt
 
         public event EventHandler LayersChanged;
 
-        public ImageInfo( ToolPanel toolInfoPanel, int width = 16, int height = 16, String name = "untitled.png" )
+        public ImageInfo( ToolPanel toolInfoPanel, int width, int height, String name = "untitled.png" )
         {
             Size = new Size( width, height );
             FilePath = name;
 
-            Tab = new TabPage( name );
-            Tab.ImageIndex = 0;
-            Tab.BackColor = SystemColors.ControlDark;
-
-            Canvas = new Canvas( this, toolInfoPanel );
-            Canvas.Name = "canvas";
-            Tab.Controls.Add( Canvas );
-
+            SetupDefaultGrid();
+            SetupCanvas( toolInfoPanel );
+            
             Layers = new List<Layer>();
             Layers.Add( new Layer( this ) );
 
             Modified = true;
         }
 
-
         public ImageInfo( ToolPanel toolInfoPanel, String filePath )
         {
             FilePath = filePath;
 
+            SetupDefaultGrid();
             Load( filePath );
+            SetupCanvas( toolInfoPanel );
 
+            Modified = false;
+        }
+
+        private void SetupDefaultGrid()
+        {
+            ShowGrid = false;
+
+            GridWidth = 1;
+            GridHeight = 1;
+
+            GridHorizontalOffset = 0;
+            GridVerticalOffset = 0;
+
+            GridColour = Color.FromArgb( 255, 127, 127, 127 );
+        }
+
+        private void SetupCanvas( ToolPanel toolInfoPanel )
+        {
             Tab = new TabPage( TabName );
             Tab.ImageIndex = 0;
             Tab.BackColor = SystemColors.ControlDark;
@@ -142,8 +228,6 @@ namespace Spryt
             Canvas = new Canvas( this, toolInfoPanel );
             Canvas.Name = "canvas";
             Tab.Controls.Add( Canvas );
-
-            Modified = false;
         }
 
         public bool InBounds( int x, int y )
@@ -257,6 +341,16 @@ namespace Spryt
                     for ( int y = 0; y < Height; ++y )
                         writer.Write( (byte) data[ x, y ] );
             }
+
+            writer.Write( myShowGrid );
+            writer.Write( myGridWidth );
+            writer.Write( myGridHeight );
+            writer.Write( myGridHorizontalOffset );
+            writer.Write( myGridVerticalOffset );
+            writer.Write( myGridColour.A );
+            writer.Write( myGridColour.R );
+            writer.Write( myGridColour.G );
+            writer.Write( myGridColour.B );
         }
 
         private void Load( String filePath )
@@ -366,6 +460,17 @@ namespace Spryt
                 for ( int x = 0; x < Width; ++x )
                     for ( int y = 0; y < Height; ++y )
                         Layers[ i ].SetPixel( x, y, (Pixel) reader.ReadByte() );
+            }
+
+            if ( version >= 0x0002 )
+            {
+                ShowGrid = reader.ReadBoolean();
+                GridWidth = reader.ReadInt32();
+                GridHeight = reader.ReadInt32();
+                GridHorizontalOffset = reader.ReadInt32();
+                GridVerticalOffset = reader.ReadInt32();
+                GridColour = Color.FromArgb( reader.ReadByte(),
+                    reader.ReadByte(), reader.ReadByte(), reader.ReadByte() );
             }
         }
     }

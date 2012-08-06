@@ -109,6 +109,7 @@ namespace Spryt
             newImage.Palette = (Color[]) colourPalettePanel.Palette.Clone();
             newImage.ColourIndex = colourPalettePanel.SelectedIndex;
             newImage.ZoomScale = ZoomScale;
+            newImage.ShowGrid = showGridToolStripMenuItem.Checked;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
             ChangeImage( newImage );
@@ -199,6 +200,7 @@ namespace Spryt
             {
                 colourPalettePanel.SetPalette( (Color[]) CurrentImage.Palette.Clone() );
                 ZoomScale = CurrentImage.ZoomScale;
+                showGridToolStripMenuItem.Checked = CurrentImage.ShowGrid;
                 colourPalettePanel.SelectedIndex = CurrentImage.ColourIndex;
             }
         }
@@ -243,6 +245,22 @@ namespace Spryt
                 CurrentImage.Save();
         }
 
+        private void saveAllToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            int index = canvasTabs.SelectedIndex;
+
+            foreach ( ImageInfo image in myCurrentImages )
+            {
+                if ( image.Modified )
+                {
+                    ChangeImage( image );
+                    saveToolStripMenuItem_Click( null, null );
+                }
+            }
+
+            ChangeImage( myCurrentImages[ index ] );
+        }
+
         private void saveAsToolStripMenuItem_Click( object sender, EventArgs e )
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -253,6 +271,36 @@ namespace Spryt
             dialog.OverwritePrompt = true;
             if ( dialog.ShowDialog() == DialogResult.OK )
                 CurrentImage.Save( dialog.FileName );
+        }
+
+        private void showGridToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            if( CurrentImage != null )
+                CurrentImage.ShowGrid = showGridToolStripMenuItem.Checked;
+        }
+
+        private void gridSizeToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            GridOptionsDialog dialog = new GridOptionsDialog();
+            if ( CurrentImage != null )
+            {
+                dialog.MaxWidth = CurrentImage.Width;
+                dialog.MaxHeight = CurrentImage.Height;
+
+                dialog.GridWidth = CurrentImage.GridWidth;
+                dialog.GridHeight = CurrentImage.GridHeight;
+                dialog.GridHorizontalOffset = CurrentImage.GridHorizontalOffset;
+                dialog.GridVerticalOffset = CurrentImage.GridVerticalOffset;
+                dialog.GridColour = CurrentImage.GridColour;
+            }
+            if ( dialog.ShowDialog() == DialogResult.OK )
+            {
+                CurrentImage.GridWidth = dialog.GridWidth;
+                CurrentImage.GridHeight = dialog.GridHeight;
+                CurrentImage.GridHorizontalOffset = dialog.GridHorizontalOffset;
+                CurrentImage.GridVerticalOffset = dialog.GridVerticalOffset;
+                CurrentImage.GridColour = dialog.GridColour;
+            }
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Spryt
 
         private int myCurrentLayerIndex;
 
+        private Pen myGridPen;
+        private System.Drawing.Drawing2D.GraphicsPath myGrid;
+
         private Point myAnchorPos;
 
         private bool myMovingSelected;
@@ -101,7 +104,43 @@ namespace Spryt
                 (int) Math.Round( Image.Height * Image.ZoomScale ) );
             Centre();
 
+            UpdateGrid();
             UpdateScaledRegion();
+            Invalidate();
+        }
+
+        public void UpdateGrid()
+        {
+            myGridPen = new Pen( Image.GridColour )
+            {
+                DashStyle = System.Drawing.Drawing2D.DashStyle.Dash
+            };
+
+            myGrid = new System.Drawing.Drawing2D.GraphicsPath();
+
+            int xDiff = (int) ( Image.GridWidth * Image.ZoomScale );
+            int yDiff = (int) ( Image.GridHeight * Image.ZoomScale );
+
+            if ( xDiff > 1 )
+            {
+                for ( int x = Image.GridHorizontalOffset; x <= Image.Width; x += Image.GridWidth )
+                {
+                    myGrid.StartFigure();
+                    myGrid.AddLine( x * Image.ZoomScale + ClientRectangle.Left, ClientRectangle.Top,
+                        x * Image.ZoomScale + ClientRectangle.Left, ClientRectangle.Bottom );
+                }
+            }
+
+            if ( yDiff > 1 )
+            {
+                for ( int y = Image.GridVerticalOffset; y <= Image.Height; y += Image.GridHeight )
+                {
+                    myGrid.StartFigure();
+                    myGrid.AddLine( ClientRectangle.Left, y * Image.ZoomScale + ClientRectangle.Top,
+                        ClientRectangle.Right, y * Image.ZoomScale + ClientRectangle.Top );
+                }
+            }
+
             Invalidate();
         }
 
@@ -543,6 +582,9 @@ namespace Spryt
                 e.Graphics.FillRectangle( stBoxPreviewBrush, myBoxPreview );
                 e.Graphics.DrawRectangle( stBoxPreviewPen, myBoxPreview );
             }
+
+            if ( Image.ShowGrid )
+                e.Graphics.DrawPath( myGridPen, myGrid );
         }
 
         private void OnParentDisposed( object sender, EventArgs e )

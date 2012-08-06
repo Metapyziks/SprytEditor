@@ -63,6 +63,12 @@
     </Compile>
     <Compile Include="CRC32.cs" />
     <Compile Include="DataGridViewLayerCell.cs" />
+    <Compile Include="GridOptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GridOptionsDialog.Designer.cs">
+      <DependentUpon>GridOptionsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageInfo.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerPanel.cs">
@@ -105,6 +111,9 @@
     </Compile>
     <EmbeddedResource Include="ColourPalettePanel.resx">
       <DependentUpon>ColourPalettePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GridOptionsDialog.resx">
+      <DependentUpon>GridOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LayerPanel.resx">
       <DependentUpon>LayerPanel.cs</DependentUpon>
