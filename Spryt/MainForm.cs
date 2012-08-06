@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing.Imaging;
+using System.Security.Cryptography;
 
 namespace Spryt
 {
@@ -113,6 +115,17 @@ namespace Spryt
             return newImage;
         }
 
+        private ImageInfo OpenImage( string filePath )
+        {
+            ImageInfo newImage = new ImageInfo( toolPanel, filePath );
+            newImage.ColourIndex = colourPalettePanel.SelectedIndex;
+            newImage.ZoomScale = ZoomScale;
+            canvasTabs.TabPages.Add( newImage.Tab );
+            myCurrentImages.Add( newImage );
+            ChangeImage( newImage );
+            return newImage;
+        }
+
         private void ChangeImage( ImageInfo image )
         {
             canvasTabs.SelectedIndex = myCurrentImages.IndexOf( image );
@@ -148,9 +161,8 @@ namespace Spryt
         private void fileToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
         {
             saveAsToolStripMenuItem.Enabled = saveAllToolStripMenuItem.Enabled =
-                saveToolStripMenuItem.Enabled = exportpngToolStripMenuItem.Enabled =
-                closeAllToolStripMenuItem.Enabled = closeToolStripMenuItem.Enabled =
-                myCurrentImages.Count > 0;
+                saveToolStripMenuItem.Enabled = closeAllToolStripMenuItem.Enabled =
+                closeToolStripMenuItem.Enabled = myCurrentImages.Count > 0;
 
             recentFilesToolStripMenuItem.Enabled = recentFilesToolStripMenuItem.DropDownItems.Count > 0;
         }
@@ -188,79 +200,28 @@ namespace Spryt
                 CurrentImage.ColourIndex = colourPalettePanel.SelectedIndex;
         }
 
-        private void importpngToolStripMenuItem_Click( object sender, EventArgs e )
+        private void toolPanel_CurrentToolChanged( object sender, CurrentToolChangedEventArgs e )
+        {
+            for ( int i = 0; i < myToolMenuButtons.Length; ++i )
+                myToolMenuButtons[ i ].Checked = i == (int) e.Tool;
+        }
+
+        private void openToolStripMenuItem_Click( object sender, EventArgs e )
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.DefaultExt = "png";
             dialog.Filter = "PNG Image (*.png)|*.png";
             dialog.Title = "Import Image";
             if ( dialog.ShowDialog() == DialogResult.OK )
-            {
-                Bitmap bmp = new Bitmap( dialog.FileName );
-                String trimmedName = Path.GetFileNameWithoutExtension( dialog.FileName );
-                ImageInfo image = CreateNewImage( bmp.Width, bmp.Height, trimmedName );
-
-                Dictionary<Color, int> colours = new Dictionary<Color, int>();
-
-                for ( int x = 0; x < bmp.Width; ++x )
-                {
-                    for ( int y = 0; y < bmp.Height; ++y )
-                    {
-                        Color clr = bmp.GetPixel( x, y );
-                        if ( clr.A < 128 )
-                            continue;
-                        else
-                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
-
-                        if ( !colours.ContainsKey( clr ) )
-                            colours.Add( clr, 1 );
-                        else
-                            ++colours[ clr ];
-                    }
-                }
-
-                List<Color> sorted = colours.Select( x => x.Key ).OrderByDescending( x => colours[ x ] ).ToList();
-
-                while ( sorted.Count < 8 )
-                    sorted.Add( Color.Black );
-
-                while ( sorted.Count > 8 )
-                    sorted.RemoveAt( sorted.Count - 1 );
-
-                if ( sorted.Count != 8 )
-                {
-                    MessageBox.Show( "Too many colours (" + sorted.Count + ")! Colour merging will be implemented later.", "Import Image", MessageBoxButtons.OK, MessageBoxIcon.Error );
-                    return;
-                }
-
-                image.Palette = sorted.ToArray();
-
-                if ( CurrentImage == image )
-                    colourPalettePanel.SetPalette( sorted.ToArray() );
-
-                for ( int x = 0; x < bmp.Width; ++x )
-                {
-                    for ( int y = 0; y < bmp.Height; ++y )
-                    {
-                        Color clr = bmp.GetPixel( x, y );
-                        Pixel pix;
-                        if ( clr.A < 128 )
-                            pix = Pixel.Empty;
-                        else
-                        {
-                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
-                            pix = (Pixel) ( 8 | sorted.IndexOf( clr ) );
-                        }
-
-                        image.Layers[ 0 ].SetPixel( x, y, pix );
-                    }
-                }
-
-                ChangeImage( image );
-            }
+                OpenImage( dialog.FileName );
         }
 
-        private void exportpngToolStripMenuItem_Click( object sender, EventArgs e )
+        private void saveToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+
+        }
+
+        private void saveAsToolStripMenuItem_Click( object sender, EventArgs e )
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.DefaultExt = "png";
@@ -269,23 +230,7 @@ namespace Spryt
             dialog.FileName = CurrentImage.FileName + ".png";
             dialog.OverwritePrompt = true;
             if ( dialog.ShowDialog() == DialogResult.OK )
-            {
-                Bitmap bmp = new Bitmap( CurrentImage.Width, CurrentImage.Height );
-                Graphics g = Graphics.FromImage( bmp );
-
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-
-                foreach ( Layer layer in CurrentImage.Layers )
-                    g.DrawImage( layer.Bitmap, Point.Empty );
-
-                bmp.Save( dialog.FileName, System.Drawing.Imaging.ImageFormat.Png );
-            }
-        }
-
-        private void toolPanel_CurrentToolChanged( object sender, CurrentToolChangedEventArgs e )
-        {
-            for ( int i = 0; i < myToolMenuButtons.Length; ++i )
-                myToolMenuButtons[ i ].Checked = i == (int) e.Tool;
+                CurrentImage.Save( dialog.FileName );
         }
     }
 }
