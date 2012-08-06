@@ -130,5 +130,13 @@ namespace Spryt
             if( layerGrid.SelectedRows.Count > 0 )
                 SelectedIndex = layerGrid.Rows.Count - layerGrid.SelectedRows[ 0 ].Index - 1;
         }
+
+        private void layerGrid_CellValueChanged( object sender, DataGridViewCellEventArgs e )
+        {
+            if ( e.ColumnIndex == 1 && Image != null )
+            {
+                Image.Layers[ Image.Layers.Count - e.RowIndex - 1 ].Label = layerGrid[ 1, e.RowIndex ].Value.ToString();
+            }
+        }
     }
 }

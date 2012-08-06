@@ -12,7 +12,7 @@ namespace Spryt
         public Bitmap Bitmap { get; private set; }
 
         public ImageInfo Image { get; private set; }
-        public String Label { get; private set; }
+        public String Label { get; set; }
 
         public Size Size { get { return Image.Size; } }
         public int Width { get { return Image.Width; } }

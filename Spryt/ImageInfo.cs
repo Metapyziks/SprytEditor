@@ -180,28 +180,17 @@ namespace Spryt
 
             MemoryStream stream = new MemoryStream();
             bmp.Save( stream, ImageFormat.Png );
-
-            MemoryStream extStream = new MemoryStream();
-            Save( extStream );
+            long pos = stream.Position;
+            Save( stream );
 
             BinaryWriter writer = new BinaryWriter( stream );
-
-            long pos = stream.Position;
-            writer.Write( (uint) extStream.Length );
-            writer.Write( "sPRY".ToCharArray() );
-
-            extStream.Position = 0;
-            byte[] buffer = new byte[ extStream.Length ];
-            extStream.Read( buffer, 0, (int) extStream.Length );
-
-            writer.Write( buffer, 0, buffer.Length );
-            writer.Write( CRC32.Compute( buffer, 0, buffer.Length ) );
-
+            writer.Write( "SPRY".ToCharArray() );
             writer.Write( pos );
 
             stream.Position = 0;
-            buffer = new byte[ stream.Length ];
+            byte[] buffer = new byte[ stream.Length ];
             stream.Read( buffer, 0, (int) stream.Length );
+            stream.Close();
 
             File.WriteAllBytes( filePath, buffer );
         }
@@ -235,61 +224,79 @@ namespace Spryt
 
         private void Load( String filePath )
         {
-            Bitmap bmp = new Bitmap( filePath );
-            Size = new Size( bmp.Width, bmp.Height );
-
-            Dictionary<Color, int> colours = new Dictionary<Color, int>();
-
-            for ( int x = 0; x < bmp.Width; ++x )
+            using ( FileStream stream = new FileStream( filePath, FileMode.Open, FileAccess.Read ) )
             {
-                for ( int y = 0; y < bmp.Height; ++y )
+                BinaryReader reader = new BinaryReader( stream );
+
+                if ( stream.Length > 12 )
                 {
-                    Color clr = bmp.GetPixel( x, y );
-                    if ( clr.A < 128 )
-                        continue;
-                    else
-                        clr = Color.FromArgb( clr.R, clr.G, clr.B );
-
-                    if ( !colours.ContainsKey( clr ) )
-                        colours.Add( clr, 1 );
-                    else
-                        ++colours[ clr ];
-                }
-            }
-
-            List<Color> sorted = colours.Select( x => x.Key ).OrderByDescending( x => colours[ x ] ).ToList();
-
-            while ( sorted.Count < 8 )
-                sorted.Add( Color.Black );
-
-            while ( sorted.Count > 8 )
-                sorted.RemoveAt( sorted.Count - 1 );
-
-            if ( sorted.Count != 8 )
-            {
-                MessageBox.Show( "Too many colours (" + sorted.Count + ")! Colour merging will be implemented later.", "Import Image", MessageBoxButtons.OK, MessageBoxIcon.Error );
-                return;
-            }
-
-            myPalette = sorted.ToArray();
-
-            Layers = new List<Layer>();
-            AddLayer();
-            for ( int x = 0; x < bmp.Width; ++x )
-            {
-                for ( int y = 0; y < bmp.Height; ++y )
-                {
-                    Color clr = bmp.GetPixel( x, y );
-                    Pixel pix;
-                    if ( clr.A < 128 )
-                        pix = Pixel.Empty;
-                    else
+                    stream.Seek( -12, SeekOrigin.End );
+                    if ( new String( reader.ReadChars( 4 ) ) == "SPRY" )
                     {
-                        clr = Color.FromArgb( clr.R, clr.G, clr.B );
-                        pix = (Pixel) ( 8 | sorted.IndexOf( clr ) );
+                        stream.Seek( reader.ReadInt64(), SeekOrigin.Begin );
+                        Load( stream );
+                        return;
                     }
+                }
 
-                    Layers[ 0 ].SetPixel( x, y, pix );
+                stream.Seek( 0, SeekOrigin.Begin );
+
+                Bitmap bmp = new Bitmap( stream );
+                Size = new Size( bmp.Width, bmp.Height );
+
+                Dictionary<Color, int> colours = new Dictionary<Color, int>();
+
+                for ( int x = 0; x < bmp.Width; ++x )
+                {
+                    for ( int y = 0; y < bmp.Height; ++y )
+                    {
+                        Color clr = bmp.GetPixel( x, y );
+                        if ( clr.A < 128 )
+                            continue;
+                        else
+                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
+
+                        if ( !colours.ContainsKey( clr ) )
+                            colours.Add( clr, 1 );
+                        else
+                            ++colours[ clr ];
+                    }
+                }
+
+                List<Color> sorted = colours.Select( x => x.Key ).OrderByDescending( x => colours[ x ] ).ToList();
+
+                while ( sorted.Count < 8 )
+                    sorted.Add( Color.Black );
+
+                while ( sorted.Count > 8 )
+                    sorted.RemoveAt( sorted.Count - 1 );
+
+                if ( sorted.Count != 8 )
+                {
+                    MessageBox.Show( "Too many colours (" + sorted.Count + ")! Colour merging will be implemented later.", "Import Image", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                    return;
+                }
+
+                myPalette = sorted.ToArray();
+
+                Layers = new List<Layer>();
+                AddLayer();
+                for ( int x = 0; x < bmp.Width; ++x )
+                {
+                    for ( int y = 0; y < bmp.Height; ++y )
+                    {
+                        Color clr = bmp.GetPixel( x, y );
+                        Pixel pix;
+                        if ( clr.A < 128 )
+                            pix = Pixel.Empty;
+                        else
+                        {
+                            clr = Color.FromArgb( clr.R, clr.G, clr.B );
+                            pix = (Pixel) ( 8 | sorted.IndexOf( clr ) );
+                        }
+
+                        Layers[ 0 ].SetPixel( x, y, pix );
+                    }
                 }
             }
         }
@@ -307,7 +314,7 @@ namespace Spryt
             for ( int i = 0; i < paletteLength; ++i )
                 palette[ i ] = Color.FromArgb( reader.ReadByte(), reader.ReadByte(), reader.ReadByte() );
 
-            Palette = palette;
+            myPalette = palette;
 
             int layerCount = reader.ReadInt32();
             Layers = new List<Layer>();

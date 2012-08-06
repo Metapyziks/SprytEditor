@@ -97,6 +97,7 @@
             this.layerGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.layerGrid.Size = new System.Drawing.Size( 144, 297 );
             this.layerGrid.TabIndex = 0;
+            this.layerGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.layerGrid_CellValueChanged );
             this.layerGrid.SelectionChanged += new System.EventHandler( this.layerGrid_SelectionChanged );
             // 
             // imagePreviewCol
