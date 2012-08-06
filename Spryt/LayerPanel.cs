@@ -13,34 +13,40 @@ namespace Spryt
     {
         private ImageInfo myImage;
 
+        public int SelectedIndex
+        {
+            get { return myImage.Canvas.CurrentLayerIndex; }
+            set
+            {
+                myImage.Canvas.CurrentLayerIndex = value;
+                if ( !layerGrid.Rows[ layerGrid.Rows.Count - value - 1 ].Selected )
+                {
+                    layerGrid.Rows[ layerGrid.Rows.Count - value - 1 ].Selected = true;
+                    layerGrid.Invalidate();
+                }
+            }
+        }
+
         public ImageInfo Image
         {
             get { return myImage; }
             set
             {
                 if ( myImage != null )
+                {
                     myImage.Canvas.ImageChanged -= ImageChanged;
+                    myImage.LayersChanged -= LayersChanged;
+                }
 
                 myImage = value;
 
-                layerGrid.Rows.Clear();
+                LayersChanged();
 
                 if ( value != null )
                 {
-                    for ( int i = 0; i < value.Layers.Count; ++i )
-                    {
-                        layerGrid.Rows.Add( null, "layer " + ( i + 1 ) );
-                        layerGrid.Rows[ i ].Height = 64;
-                        layerGrid[ 0, i ] = new DataGridViewLayerCell() { Value = value.Layers[ i ].Bitmap };
-                    }
-                }
-
-                ImageChanged();
-
-                if ( value != null )
                     value.Canvas.ImageChanged += ImageChanged;
-
-                Invalidate();
+                    value.LayersChanged += LayersChanged;
+                }
             }
         }
 
@@ -56,24 +62,73 @@ namespace Spryt
             layerGrid.Invalidate( true );
         }
 
+        private void LayersChanged( object sender = null, EventArgs e = null )
+        {
+            layerGrid.Rows.Clear();
+
+            if ( Image != null )
+            {
+                for ( int i = 0; i < Image.Layers.Count; ++i )
+                {
+                    layerGrid.Rows.Insert( 0, null, Image.Layers[ i ].Label );
+                    layerGrid.Rows[ 0 ].Height = 48;
+                    layerGrid[ 0, 0 ] = new DataGridViewLayerCell() { Value = Image.Layers[ i ].Bitmap };
+                }
+            }
+
+            ImageChanged();
+        }
+
         private void moveUpBtn_Click( object sender, EventArgs e )
         {
-
+            if ( Image != null )
+            {
+                if ( SelectedIndex < Image.Layers.Count - 1 )
+                {
+                    int index = SelectedIndex + 1;
+                    Image.SwapLayers( SelectedIndex, index );
+                    SelectedIndex = index;
+                }
+            }
         }
 
         private void moveDownBtn_Click( object sender, EventArgs e )
         {
-
+            if ( Image != null )
+            {
+                if ( SelectedIndex > 0 )
+                {
+                    int index = SelectedIndex - 1;
+                    Image.SwapLayers( SelectedIndex, index );
+                    SelectedIndex = index;
+                }
+            }
         }
 
         private void addBtn_Click( object sender, EventArgs e )
         {
-
+            if ( Image != null )
+            {
+                int index = SelectedIndex + 1;
+                Image.AddLayer( index );
+                SelectedIndex = index;
+            }
         }
 
         private void deleteBtn_Click( object sender, EventArgs e )
         {
+            if ( Image != null )
+            {
+                int index = SelectedIndex;
+                Image.RemoveLayer( index );
+                SelectedIndex = Math.Min( index, Image.Layers.Count - 1 );
+            }
+        }
 
+        private void layerGrid_SelectionChanged( object sender, EventArgs e )
+        {
+            if( layerGrid.SelectedRows.Count > 0 )
+                SelectedIndex = layerGrid.Rows.Count - layerGrid.SelectedRows[ 0 ].Index - 1;
         }
     }
 }

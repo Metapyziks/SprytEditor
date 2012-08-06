@@ -127,7 +127,7 @@ namespace Spryt
             Focus();
         }
 
-        private void SendImageChange()
+        public void SendImageChange()
         {
             Invalidate();
 

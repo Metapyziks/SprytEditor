@@ -16,7 +16,7 @@ namespace Spryt
             if ( value != null )
             {
                 Image image = (Image) value;
-                RectangleF destRect = new RectangleF( 1, 1, 64, 64 );
+                RectangleF destRect = new RectangleF( cellBounds.Left, cellBounds.Top, 48, 48 );
                 RectangleF srcRect = new RectangleF( -0.5f, -0.5f, image.Width, image.Height );
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                 graphics.DrawImage( image, destRect, srcRect, GraphicsUnit.Pixel );

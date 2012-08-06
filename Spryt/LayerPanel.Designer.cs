@@ -32,13 +32,13 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.layerGrid = new System.Windows.Forms.DataGridView();
+            this.imagePreviewCol = new System.Windows.Forms.DataGridViewImageColumn();
+            this.layerNameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.moveUpBtn = new System.Windows.Forms.Button();
             this.moveDownBtn = new System.Windows.Forms.Button();
             this.addBtn = new System.Windows.Forms.Button();
             this.deleteBtn = new System.Windows.Forms.Button();
-            this.layerNameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
-            this.imagePreviewCol = new System.Windows.Forms.DataGridViewImageColumn();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ( (System.ComponentModel.ISupportInitialize) ( this.layerGrid ) ).BeginInit();
@@ -97,6 +97,28 @@
             this.layerGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.layerGrid.Size = new System.Drawing.Size( 144, 297 );
             this.layerGrid.TabIndex = 0;
+            this.layerGrid.SelectionChanged += new System.EventHandler( this.layerGrid_SelectionChanged );
+            // 
+            // imagePreviewCol
+            // 
+            this.imagePreviewCol.HeaderText = "Preview";
+            this.imagePreviewCol.MinimumWidth = 48;
+            this.imagePreviewCol.Name = "imagePreviewCol";
+            this.imagePreviewCol.ReadOnly = true;
+            this.imagePreviewCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.imagePreviewCol.Width = 48;
+            // 
+            // layerNameCol
+            // 
+            this.layerNameCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font( "Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
+            this.layerNameCol.DefaultCellStyle = dataGridViewCellStyle1;
+            this.layerNameCol.HeaderText = "Name";
+            this.layerNameCol.MaxInputLength = 32;
+            this.layerNameCol.Name = "layerNameCol";
+            this.layerNameCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.layerNameCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // moveUpBtn
             // 
@@ -142,18 +164,6 @@
             this.deleteBtn.UseVisualStyleBackColor = true;
             this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
             // 
-            // layerNameCol
-            // 
-            this.layerNameCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font( "Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
-            this.layerNameCol.DefaultCellStyle = dataGridViewCellStyle1;
-            this.layerNameCol.HeaderText = "Name";
-            this.layerNameCol.MaxInputLength = 32;
-            this.layerNameCol.Name = "layerNameCol";
-            this.layerNameCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.layerNameCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
             // dataGridViewImageColumn1
             // 
             this.dataGridViewImageColumn1.HeaderText = "Preview";
@@ -162,15 +172,6 @@
             this.dataGridViewImageColumn1.ReadOnly = true;
             this.dataGridViewImageColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridViewImageColumn1.Width = 64;
-            // 
-            // imagePreviewCol
-            // 
-            this.imagePreviewCol.HeaderText = "Preview";
-            this.imagePreviewCol.MinimumWidth = 64;
-            this.imagePreviewCol.Name = "imagePreviewCol";
-            this.imagePreviewCol.ReadOnly = true;
-            this.imagePreviewCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.imagePreviewCol.Width = 64;
             // 
             // LayerPanel
             // 
@@ -195,8 +196,8 @@
         private System.Windows.Forms.Button moveDownBtn;
         private System.Windows.Forms.Button addBtn;
         private System.Windows.Forms.Button deleteBtn;
+        private System.Windows.Forms.DataGridViewImageColumn dataGridViewImageColumn1;
         private System.Windows.Forms.DataGridViewImageColumn imagePreviewCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn layerNameCol;
-        private System.Windows.Forms.DataGridViewImageColumn dataGridViewImageColumn1;
     }
 }

@@ -7,18 +7,6 @@ using System.Drawing;
 
 namespace Spryt
 {
-    class LayerAddedEventArgs : EventArgs
-    {
-        public readonly Layer Layer;
-        public readonly int Index;
-
-        public LayerAddedEventArgs( ImageInfo image, Layer layer )
-        {
-            Layer = layer;
-            Index = image.Layers.IndexOf( layer );
-        }
-    }
-
     class LayerRemovedEventArgs : EventArgs
     {
         public readonly int Index;
@@ -95,6 +83,8 @@ namespace Spryt
 
         public List<Layer> Layers { get; set; }
 
+        public event EventHandler LayersChanged;
+
         public ImageInfo( ToolPanel toolInfoPanel, int width = 16, int height = 16, String name = "untitled" )
         {
             Size = new Size( width, height );
@@ -115,6 +105,44 @@ namespace Spryt
         public bool InBounds( int x, int y )
         {
             return x >= 0 && y >= 0 && x < Width && y < Height;
+        }
+
+        public void AddLayer( int index = -1, string label = null )
+        {
+            Layers.Insert( index, new Layer( this, label ) );
+
+            if( LayersChanged != null )
+                LayersChanged( this, new EventArgs() );
+        }
+
+        public void RemoveLayer( int index )
+        {
+            Layers.RemoveAt( index );
+
+            if ( Layers.Count == 0 )
+                Layers.Add( new Layer( this ) );
+
+            if ( LayersChanged != null )
+                LayersChanged( this, new EventArgs() );
+
+            Canvas.SendImageChange();
+        }
+
+        public void SwapLayers( int indexA, int indexB )
+        {
+            Layer a = Layers[ indexA ];
+            Layer b = Layers[ indexB ];
+
+            Layers.RemoveAt( indexA );
+            Layers.Insert( indexA, b );
+
+            Layers.RemoveAt( indexB );
+            Layers.Insert( indexB, a );
+
+            if ( LayersChanged != null )
+                LayersChanged( this, new EventArgs() );
+
+            Canvas.SendImageChange();
         }
     }
 }

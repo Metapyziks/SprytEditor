@@ -12,14 +12,27 @@ namespace Spryt
         public Bitmap Bitmap { get; private set; }
 
         public ImageInfo Image { get; private set; }
+        public String Label { get; private set; }
 
         public Size Size { get { return Image.Size; } }
         public int Width { get { return Image.Width; } }
         public int Height { get { return Image.Height; } }
 
-        public Layer( ImageInfo image )
+        public Layer( ImageInfo image, String label = null )
         {
             Image = image;
+
+            if ( label == null )
+            {
+                int i = 1;
+                while ( image.Layers.Exists( x => x.Label.ToLower().Equals( "layer " + i ) ) )
+                    ++i;
+
+                label = "layer " + i;
+            }
+
+            Label = label;
+
             Pixels = new Pixel[ Width, Height ];
             Bitmap = new Bitmap( Width, Height );
 
