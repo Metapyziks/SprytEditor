@@ -115,8 +115,8 @@ namespace Spryt
 
         private void ChangeImage( ImageInfo image )
         {
-            previewPanel.SetImage( image );
             canvasTabs.SelectedIndex = myCurrentImages.IndexOf( image );
+            canvasTabs_SelectedIndexChanged( null, null );
         }
 
         protected override void OnMouseWheel( MouseEventArgs e )
@@ -163,7 +163,10 @@ namespace Spryt
 
         private void canvasTabs_SelectedIndexChanged( object sender, EventArgs e )
         {
-            previewPanel.SetImage( CurrentImage );
+            previewPanel.Image = CurrentImage;
+            layerPanel.Image = CurrentImage;
+
+            previewPanel.Enabled = layerPanel.Enabled = CurrentImage != null;
 
             if ( CurrentImage != null )
             {
@@ -252,6 +255,8 @@ namespace Spryt
                         image.Layers[ 0 ].SetPixel( x, y, pix );
                     }
                 }
+
+                ChangeImage( image );
             }
         }
 

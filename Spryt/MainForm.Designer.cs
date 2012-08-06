@@ -368,6 +368,7 @@
             // 
             this.layerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layerPanel.Enabled = false;
+            this.layerPanel.Image = null;
             this.layerPanel.Location = new System.Drawing.Point( 814, 210 );
             this.layerPanel.Name = "layerPanel";
             this.layerPanel.Size = new System.Drawing.Size( 156, 448 );
@@ -377,6 +378,8 @@
             // 
             this.previewPanel.AutoSize = true;
             this.previewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewPanel.Enabled = false;
+            this.previewPanel.Image = null;
             this.previewPanel.Location = new System.Drawing.Point( 814, 3 );
             this.previewPanel.Name = "previewPanel";
             this.previewPanel.Size = new System.Drawing.Size( 156, 201 );

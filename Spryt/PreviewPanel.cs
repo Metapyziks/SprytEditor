@@ -11,31 +11,35 @@ namespace Spryt
 {
     partial class PreviewPanel : UserControl
     {
-        public ImageInfo Image { get; private set; }
+        private ImageInfo myImage;
+
+        public ImageInfo Image
+        {
+            get { return myImage; }
+            set
+            {
+                if ( myImage != null )
+                    myImage.Canvas.ImageChanged -= ImageChanged;
+
+                myImage = value;
+
+                if ( value != null )
+                {
+                    value.Canvas.ImageChanged += ImageChanged;
+                    myBitmap = new Bitmap( value.Width, value.Height );
+                }
+                else
+                    myBitmap = null;
+
+                Redraw();
+            }
+        }
 
         private Bitmap myBitmap;
 
         public PreviewPanel()
         {
             InitializeComponent();
-        }
-
-        public void SetImage( ImageInfo image )
-        {
-            if ( Image != null )
-                Image.Canvas.ImageChanged -= ImageChanged;
-
-            Image = image;
-
-            if ( Image != null )
-                Image.Canvas.ImageChanged += ImageChanged;
-
-            if ( Image != null )
-                myBitmap = new Bitmap( image.Width, image.Height );
-            else
-                myBitmap = null;
-
-            Redraw();
         }
 
         private void ImageChanged( object sender, EventArgs e )
@@ -45,12 +49,14 @@ namespace Spryt
 
         public void Redraw()
         {
-            Graphics g = Graphics.FromImage( myBitmap );
-            g.Clear( Color.Transparent );
-
             if ( Image != null )
+            {
+                Graphics g = Graphics.FromImage( myBitmap );
+                g.Clear( Color.Transparent );
+
                 foreach ( Layer layer in Image.Layers )
                     g.DrawImage( layer.Bitmap, Point.Empty );
+            }
 
             displayPanel.Invalidate();
         }

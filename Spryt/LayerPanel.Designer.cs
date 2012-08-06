@@ -29,15 +29,17 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.layerGrid = new System.Windows.Forms.DataGridView();
+            this.imagePreviewCol = new System.Windows.Forms.DataGridViewImageColumn();
+            this.layerNameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.moveUpBtn = new System.Windows.Forms.Button();
+            this.moveDownBtn = new System.Windows.Forms.Button();
+            this.addBtn = new System.Windows.Forms.Button();
+            this.deleteBtn = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
-            ( (System.ComponentModel.ISupportInitialize) ( this.dataGridView1 ) ).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) ( this.layerGrid ) ).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -51,28 +53,18 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Layers";
             // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.tableLayoutPanel1.SetColumnSpan( this.dataGridView1, 4 );
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point( 3, 3 );
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size( 144, 297 );
-            this.dataGridView1.TabIndex = 0;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
             this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
-            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
+            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 54F ) );
             this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
-            this.tableLayoutPanel1.Controls.Add( this.dataGridView1, 0, 0 );
-            this.tableLayoutPanel1.Controls.Add( this.button1, 0, 1 );
-            this.tableLayoutPanel1.Controls.Add( this.button2, 1, 1 );
-            this.tableLayoutPanel1.Controls.Add( this.button3, 2, 1 );
-            this.tableLayoutPanel1.Controls.Add( this.button4, 3, 1 );
+            this.tableLayoutPanel1.Controls.Add( this.layerGrid, 0, 0 );
+            this.tableLayoutPanel1.Controls.Add( this.moveUpBtn, 0, 1 );
+            this.tableLayoutPanel1.Controls.Add( this.moveDownBtn, 1, 1 );
+            this.tableLayoutPanel1.Controls.Add( this.addBtn, 2, 1 );
+            this.tableLayoutPanel1.Controls.Add( this.deleteBtn, 3, 1 );
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point( 3, 16 );
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -82,42 +74,87 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size( 150, 335 );
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // button1
+            // layerGrid
             // 
-            this.button1.Image = global::Spryt.Properties.Resources.arrow_up;
-            this.button1.Location = new System.Drawing.Point( 3, 306 );
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size( 26, 26 );
-            this.button1.TabIndex = 1;
-            this.button1.UseVisualStyleBackColor = true;
+            this.layerGrid.AllowUserToAddRows = false;
+            this.layerGrid.AllowUserToDeleteRows = false;
+            this.layerGrid.AllowUserToOrderColumns = true;
+            this.layerGrid.AllowUserToResizeColumns = false;
+            this.layerGrid.AllowUserToResizeRows = false;
+            this.layerGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.layerGrid.ColumnHeadersVisible = false;
+            this.layerGrid.Columns.AddRange( new System.Windows.Forms.DataGridViewColumn[] {
+            this.imagePreviewCol,
+            this.layerNameCol} );
+            this.tableLayoutPanel1.SetColumnSpan( this.layerGrid, 4 );
+            this.layerGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layerGrid.Location = new System.Drawing.Point( 3, 3 );
+            this.layerGrid.Name = "layerGrid";
+            this.layerGrid.RowHeadersVisible = false;
+            this.layerGrid.Size = new System.Drawing.Size( 144, 297 );
+            this.layerGrid.TabIndex = 0;
             // 
-            // button2
+            // imagePreviewCol
             // 
-            this.button2.Image = global::Spryt.Properties.Resources.arrow_down;
-            this.button2.Location = new System.Drawing.Point( 35, 306 );
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size( 26, 26 );
-            this.button2.TabIndex = 2;
-            this.button2.UseVisualStyleBackColor = true;
+            this.imagePreviewCol.HeaderText = "Preview";
+            this.imagePreviewCol.MinimumWidth = 64;
+            this.imagePreviewCol.Name = "imagePreviewCol";
+            this.imagePreviewCol.ReadOnly = true;
+            this.imagePreviewCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.imagePreviewCol.Width = 64;
             // 
-            // button3
+            // layerNameCol
             // 
-            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button3.Image = global::Spryt.Properties.Resources.add;
-            this.button3.Location = new System.Drawing.Point( 67, 306 );
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size( 48, 26 );
-            this.button3.TabIndex = 3;
-            this.button3.UseVisualStyleBackColor = true;
+            this.layerNameCol.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.layerNameCol.HeaderText = "Name";
+            this.layerNameCol.MaxInputLength = 32;
+            this.layerNameCol.Name = "layerNameCol";
+            this.layerNameCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.layerNameCol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // button4
+            // moveUpBtn
             // 
-            this.button4.Image = global::Spryt.Properties.Resources.delete;
-            this.button4.Location = new System.Drawing.Point( 121, 306 );
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size( 26, 26 );
-            this.button4.TabIndex = 4;
-            this.button4.UseVisualStyleBackColor = true;
+            this.moveUpBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.moveUpBtn.Image = global::Spryt.Properties.Resources.arrow_up;
+            this.moveUpBtn.Location = new System.Drawing.Point( 3, 306 );
+            this.moveUpBtn.Name = "moveUpBtn";
+            this.moveUpBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.moveUpBtn.TabIndex = 1;
+            this.moveUpBtn.UseVisualStyleBackColor = true;
+            this.moveUpBtn.Click += new System.EventHandler( this.moveUpBtn_Click );
+            // 
+            // moveDownBtn
+            // 
+            this.moveDownBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.moveDownBtn.Image = global::Spryt.Properties.Resources.arrow_down;
+            this.moveDownBtn.Location = new System.Drawing.Point( 35, 306 );
+            this.moveDownBtn.Name = "moveDownBtn";
+            this.moveDownBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.moveDownBtn.TabIndex = 2;
+            this.moveDownBtn.UseVisualStyleBackColor = true;
+            this.moveDownBtn.Click += new System.EventHandler( this.moveDownBtn_Click );
+            // 
+            // addBtn
+            // 
+            this.addBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.addBtn.Image = global::Spryt.Properties.Resources.add;
+            this.addBtn.Location = new System.Drawing.Point( 67, 306 );
+            this.addBtn.Name = "addBtn";
+            this.addBtn.Size = new System.Drawing.Size( 48, 26 );
+            this.addBtn.TabIndex = 3;
+            this.addBtn.UseVisualStyleBackColor = true;
+            this.addBtn.Click += new System.EventHandler( this.addBtn_Click );
+            // 
+            // deleteBtn
+            // 
+            this.deleteBtn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deleteBtn.Image = global::Spryt.Properties.Resources.delete;
+            this.deleteBtn.Location = new System.Drawing.Point( 121, 306 );
+            this.deleteBtn.Name = "deleteBtn";
+            this.deleteBtn.Size = new System.Drawing.Size( 26, 26 );
+            this.deleteBtn.TabIndex = 4;
+            this.deleteBtn.UseVisualStyleBackColor = true;
+            this.deleteBtn.Click += new System.EventHandler( this.deleteBtn_Click );
             // 
             // LayerPanel
             // 
@@ -127,8 +164,8 @@
             this.Name = "LayerPanel";
             this.Size = new System.Drawing.Size( 156, 354 );
             this.groupBox1.ResumeLayout( false );
-            ( (System.ComponentModel.ISupportInitialize) ( this.dataGridView1 ) ).EndInit();
             this.tableLayoutPanel1.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) ( this.layerGrid ) ).EndInit();
             this.ResumeLayout( false );
 
         }
@@ -137,10 +174,12 @@
 
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.DataGridView layerGrid;
+        private System.Windows.Forms.Button moveUpBtn;
+        private System.Windows.Forms.Button moveDownBtn;
+        private System.Windows.Forms.Button addBtn;
+        private System.Windows.Forms.Button deleteBtn;
+        private System.Windows.Forms.DataGridViewImageColumn imagePreviewCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn layerNameCol;
     }
 }

@@ -61,6 +61,7 @@
     <Compile Include="ColourPalettePanel.Designer.cs">
       <DependentUpon>ColourPalettePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataGridViewLayerCell.cs" />
     <Compile Include="ImageInfo.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerPanel.cs">

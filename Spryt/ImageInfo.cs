@@ -7,6 +7,28 @@ using System.Drawing;
 
 namespace Spryt
 {
+    class LayerAddedEventArgs : EventArgs
+    {
+        public readonly Layer Layer;
+        public readonly int Index;
+
+        public LayerAddedEventArgs( ImageInfo image, Layer layer )
+        {
+            Layer = layer;
+            Index = image.Layers.IndexOf( layer );
+        }
+    }
+
+    class LayerRemovedEventArgs : EventArgs
+    {
+        public readonly int Index;
+
+        public LayerRemovedEventArgs( int index )
+        {
+            Index = index;
+        }
+    }
+
     class ImageInfo
     {
         private string myFileName;
