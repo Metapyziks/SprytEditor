@@ -134,9 +134,7 @@ namespace Spryt
 
         protected override void OnMouseWheel( MouseEventArgs e )
         {
-            if ( !ModifierKeys.HasFlag( Keys.Control ) )
-                colourPalettePanel.SelectedIndex -= Math.Sign( e.Delta );
-            else
+            if ( ModifierKeys.HasFlag( Keys.Control ) )
             {
                 myZoomLevel += Math.Sign( e.Delta );
 
@@ -147,6 +145,19 @@ namespace Spryt
 
                 ZoomScale = stZoomLevels[ myZoomLevel ];
             }
+            else if ( ModifierKeys.HasFlag( Keys.Alt ) )
+            {
+                if ( myCurrentImages.Count > 1 )
+                    ChangeImage( myCurrentImages[ ( canvasTabs.SelectedIndex + Math.Sign( e.Delta )
+                        + myCurrentImages.Count ) % myCurrentImages.Count ] );
+            }
+            else if ( ModifierKeys.HasFlag( Keys.Shift ) )
+            {
+                toolPanel.CurrentTool = (Tool) ( ( (int) toolPanel.CurrentTool + Math.Sign( e.Delta )
+                    + myToolMenuButtons.Length ) % myToolMenuButtons.Length );
+            }
+            else
+                colourPalettePanel.SelectedIndex -= Math.Sign( e.Delta );
 
             base.OnMouseWheel( e );
         }
@@ -209,16 +220,23 @@ namespace Spryt
         private void openToolStripMenuItem_Click( object sender, EventArgs e )
         {
             OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = true;
             dialog.DefaultExt = "png";
             dialog.Filter = "PNG Image (*.png)|*.png";
             dialog.Title = "Import Image";
             if ( dialog.ShowDialog() == DialogResult.OK )
-                OpenImage( dialog.FileName );
+            {
+                foreach( String filePath in dialog.FileNames )
+                    OpenImage( filePath );
+            }
         }
 
         private void saveToolStripMenuItem_Click( object sender, EventArgs e )
         {
-
+            if ( CurrentImage.FilePath == null )
+                saveAsToolStripMenuItem_Click( null, null );
+            else
+                CurrentImage.Save();
         }
 
         private void saveAsToolStripMenuItem_Click( object sender, EventArgs e )
@@ -227,7 +245,7 @@ namespace Spryt
             dialog.DefaultExt = "png";
             dialog.Filter = "PNG Image (*.png)|*.png";
             dialog.Title = "Export Image";
-            dialog.FileName = CurrentImage.FileName + ".png";
+            dialog.FileName = CurrentImage.FileName;
             dialog.OverwritePrompt = true;
             if ( dialog.ShowDialog() == DialogResult.OK )
                 CurrentImage.Save( dialog.FileName );

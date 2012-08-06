@@ -23,22 +23,42 @@ namespace Spryt
     {
         public const UInt16 Version = 0x0001;
 
-        private string myFileName;
+        private string myFilePath;
+        private bool myModified;
         private Color[] myPalette;
         private float myZoomScale;
 
         public String FileName
         {
-            get
-            {
-                return myFileName;
-            }
+            get { return Path.GetFileName( FilePath ); }
+        }
+
+        public String TabName
+        {
+            get { return FileName + ( myModified ? "*" : "" ); }
+        }
+
+        public String FilePath
+        {
+            get { return myFilePath; }
             set
             {
-                myFileName = value;
+                myFilePath = value;
 
                 if ( Tab != null )
-                    Tab.Text = myFileName;
+                    Tab.Text = TabName;
+            }
+        }
+
+        public bool Modified
+        {
+            get { return myModified; }
+            set
+            {
+                myModified = value;
+
+                if ( Tab != null )
+                    Tab.Text = TabName;
             }
         }
 
@@ -89,10 +109,10 @@ namespace Spryt
 
         public event EventHandler LayersChanged;
 
-        public ImageInfo( ToolPanel toolInfoPanel, int width = 16, int height = 16, String name = "untitled" )
+        public ImageInfo( ToolPanel toolInfoPanel, int width = 16, int height = 16, String name = "untitled.png" )
         {
             Size = new Size( width, height );
-            FileName = name;
+            FilePath = name;
 
             Tab = new TabPage( name );
             Tab.ImageIndex = 0;
@@ -104,22 +124,26 @@ namespace Spryt
 
             Layers = new List<Layer>();
             Layers.Add( new Layer( this ) );
+
+            Modified = true;
         }
 
 
         public ImageInfo( ToolPanel toolInfoPanel, String filePath )
         {
-            FileName = Path.GetFileNameWithoutExtension( filePath );
+            FilePath = filePath;
 
             Load( filePath );
 
-            Tab = new TabPage( FileName );
+            Tab = new TabPage( TabName );
             Tab.ImageIndex = 0;
             Tab.BackColor = SystemColors.ControlDark;
 
             Canvas = new Canvas( this, toolInfoPanel );
             Canvas.Name = "canvas";
             Tab.Controls.Add( Canvas );
+
+            Modified = false;
         }
 
         public bool InBounds( int x, int y )
@@ -134,6 +158,8 @@ namespace Spryt
 
             Layers.Insert( index, new Layer( this, label ) );
 
+            Modified = true;
+
             if( LayersChanged != null )
                 LayersChanged( this, new EventArgs() );
         }
@@ -141,6 +167,8 @@ namespace Spryt
         public void RemoveLayer( int index )
         {
             Layers.RemoveAt( index );
+
+            Modified = true;
 
             if ( Layers.Count == 0 )
                 Layers.Add( new Layer( this ) );
@@ -162,14 +190,21 @@ namespace Spryt
             Layers.RemoveAt( indexB );
             Layers.Insert( indexB, a );
 
+            Modified = true;
+
             if ( LayersChanged != null )
                 LayersChanged( this, new EventArgs() );
 
             Canvas.SendImageChange();
         }
 
-        public void Save( String filePath )
+        public void Save( String filePath = null )
         {
+            if ( filePath == null )
+                filePath = FilePath;
+            else
+                FilePath = filePath;
+
             Bitmap bmp = new Bitmap( Width, Height );
             Graphics g = Graphics.FromImage( bmp );
 
@@ -193,6 +228,8 @@ namespace Spryt
             stream.Close();
 
             File.WriteAllBytes( filePath, buffer );
+
+            Modified = false;
         }
 
         private void Save( Stream stream )
@@ -235,6 +272,8 @@ namespace Spryt
                     {
                         stream.Seek( reader.ReadInt64(), SeekOrigin.Begin );
                         Load( stream );
+
+                        Modified = false;
                         return;
                     }
                 }
@@ -299,6 +338,8 @@ namespace Spryt
                     }
                 }
             }
+
+            Modified = false;
         }
 
         private void Load( Stream stream )

@@ -37,7 +37,7 @@ namespace Spryt
             myToolBtns = new RadioButton[]
             {
                 selectBtn, areaBtn, wandBtn,
-                pencilBtn, fillBtn, boxBtn
+                pencilBtn, boxBtn, fillBtn
             };
 
             for ( int i = 0; i < myToolBtns.Length; ++i )

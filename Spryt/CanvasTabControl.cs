@@ -15,57 +15,6 @@ using System.Drawing.Drawing2D;
 
 namespace Spryt
 {
-    public class ClosingEventArgs
-    {
-        private readonly int _nTabIndex = -1;
-        public ClosingEventArgs( int nTabIndex )
-        {
-            _nTabIndex = nTabIndex;
-            Cancel = false;
-        }
-        public bool Cancel { get; set; }
-        /// <summary>
-        /// Get the tab index value where the close button is clicked
-        /// </summary>
-        public int TabIndex
-        {
-            get
-            {
-                return _nTabIndex;
-            }
-        }
-    }
-    public class ClosedEventArgs : EventArgs
-    {
-        private readonly int _nTabIndex = -1;
-        private readonly TabPage _tab;
-        public ClosedEventArgs( TabPage tab, int nTabIndex )
-        {
-            _tab = tab;
-            _nTabIndex = nTabIndex;
-        }
-        /// <summary>
-        /// Get/Set the tab index value where the close button is clicked
-        /// </summary>
-        public TabPage Tab
-        {
-            get
-            {
-                return _tab;
-            }
-        }
-        /// <summary>
-        /// Get the tab index value where the close button is clicked
-        /// </summary>
-        public int TabIndex
-        {
-            get
-            {
-                return _nTabIndex;
-            }
-        }
-    }
-
     public class CanvasTabControl : System.Windows.Forms.TabControl
     {
         public CanvasTabControl()
@@ -177,6 +126,58 @@ namespace Spryt
         {
             if ( TabClosing != null )
                 TabClosing( this, e );
+        }
+    }
+
+    public class ClosingEventArgs
+    {
+        private readonly int _nTabIndex = -1;
+        public ClosingEventArgs( int nTabIndex )
+        {
+            _nTabIndex = nTabIndex;
+            Cancel = false;
+        }
+        public bool Cancel { get; set; }
+        /// <summary>
+        /// Get the tab index value where the close button is clicked
+        /// </summary>
+        public int TabIndex
+        {
+            get
+            {
+                return _nTabIndex;
+            }
+        }
+    }
+
+    public class ClosedEventArgs : EventArgs
+    {
+        private readonly int _nTabIndex = -1;
+        private readonly TabPage _tab;
+        public ClosedEventArgs( TabPage tab, int nTabIndex )
+        {
+            _tab = tab;
+            _nTabIndex = nTabIndex;
+        }
+        /// <summary>
+        /// Get/Set the tab index value where the close button is clicked
+        /// </summary>
+        public TabPage Tab
+        {
+            get
+            {
+                return _tab;
+            }
+        }
+        /// <summary>
+        /// Get the tab index value where the close button is clicked
+        /// </summary>
+        public int TabIndex
+        {
+            get
+            {
+                return _nTabIndex;
+            }
         }
     }
 }

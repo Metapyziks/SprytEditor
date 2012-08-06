@@ -12,7 +12,7 @@ namespace Spryt
         Wand = 2,
 
         Pencil = 3,
-        Fill = 4,
-        Box = 5
+        Box = 4,
+        Fill = 5
     }
 }

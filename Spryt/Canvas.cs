@@ -131,6 +131,8 @@ namespace Spryt
         {
             Invalidate();
 
+            Image.Modified = true;
+
             if ( ImageChanged != null )
                 ImageChanged( this, new EventArgs() );
         }
@@ -142,12 +144,22 @@ namespace Spryt
                 case Keys.Delete:
                     if ( mySelectedArea != 0 )
                     {
-                        for ( int x = 0; x < Image.Width; ++x )
-                            for ( int y = 0; y < Image.Height; ++y )
-                                if ( mySelectedPixels[ x, y ] )
-                                    CurrentLayer.SetPixel( x, y, Pixel.Empty );
+                        bool change = false;
 
-                        SendImageChange();
+                        for ( int x = 0; x < Image.Width; ++x )
+                        {
+                            for ( int y = 0; y < Image.Height; ++y )
+                            {
+                                if ( mySelectedPixels[ x, y ] && CurrentLayer.Pixels[ x, y ] != Pixel.Empty )
+                                {
+                                    CurrentLayer.SetPixel( x, y, Pixel.Empty );
+                                    change = true;
+                                }
+                            }
+                        }
+
+                        if ( change )
+                            SendImageChange();
                     }
                     break;
             }
@@ -499,7 +511,7 @@ namespace Spryt
 
                 Centre();
             }
-
+            
             myOldParent = Parent;
         }
 
