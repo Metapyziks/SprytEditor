@@ -311,7 +311,18 @@ namespace Spryt
         private void tiledViewToolStripMenuItem_Click( object sender, EventArgs e )
         {
             if ( CurrentImage != null )
+            {
                 CurrentImage.TiledView = tiledViewToolStripMenuItem.Checked;
+
+                if ( CurrentImage.TiledView && !CurrentImage.ShowGrid )
+                {
+                    CurrentImage.GridWidth = CurrentImage.Width;
+                    CurrentImage.GridHeight = CurrentImage.Height;
+                    CurrentImage.GridHorizontalOffset = 0;
+                    CurrentImage.GridVerticalOffset = 0;
+                    CurrentImage.ShowGrid = true;
+                }
+            }
         }
     }
 }

@@ -41,8 +41,19 @@ namespace Spryt
                     SetPixel( x, y, Pixel.Empty );
         }
 
+        private int Wrap( int a, int b )
+        {
+            return a - (int) Math.Floor( (float) a / b ) * b;
+        }
+
         public void SetPixel( int x, int y, Pixel colour )
         {
+            if ( Image.TiledView )
+            {
+                x = Wrap( x, Image.Width );
+                y = Wrap( y, Image.Height );
+            }
+
             Pixels[ x, y ] = colour;
             DrawPixel( x, y );
         }

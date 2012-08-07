@@ -24,6 +24,8 @@ namespace Spryt
 
         private int myCurrentLayerIndex;
 
+        private Size myDisplaySize;
+        private Rectangle[] myViewRectangles;
         private Pen myGridPen;
         private System.Drawing.Drawing2D.GraphicsPath myGrid;
 
@@ -98,12 +100,40 @@ namespace Spryt
                 Location = new Point( ( Parent.Width - Width ) / 2, ( Parent.Height - Height ) / 2 );
         }
 
+        private void UpdateClientSize()
+        {
+            myDisplaySize = new Size( (int) Math.Round( Image.Width * Image.ZoomScale ),
+                (int) Math.Round( Image.Height * Image.ZoomScale ) );
+            ClientSize = new Size( myDisplaySize.Width * ( Image.TiledView ? 3 : 1 ),
+                myDisplaySize.Height * ( Image.TiledView ? 3 : 1 ) );
+
+            if ( Image.TiledView )
+            {
+                myViewRectangles = new Rectangle[ 9 ];
+                for ( int x = 0; x < 3; ++x )
+                {
+                    for ( int y = 0; y < 3; ++y )
+                    {
+                        int i = x * 3 + y;
+                        myViewRectangles[ i ] = new Rectangle(
+                            ClientRectangle.X + x * myDisplaySize.Width,
+                            ClientRectangle.Y + y * myDisplaySize.Height,
+                            myDisplaySize.Width,
+                            myDisplaySize.Height );
+                    }
+                }
+            }
+            else
+            {
+                myViewRectangles = new Rectangle[] { ClientRectangle };
+            }
+
+            Centre();
+        }
+
         public void UpdateZoomScale()
         {
-            ClientSize = new Size( (int) Math.Round( Image.Width * Image.ZoomScale ), 
-                (int) Math.Round( Image.Height * Image.ZoomScale ) );
-            Centre();
-
+            UpdateClientSize();
             UpdateGrid();
             UpdateScaledRegion();
             Invalidate();
@@ -126,8 +156,8 @@ namespace Spryt
                 for ( int x = Image.GridHorizontalOffset; x <= Image.Width; x += Image.GridWidth )
                 {
                     myGrid.StartFigure();
-                    myGrid.AddLine( x * Image.ZoomScale + ClientRectangle.Left, ClientRectangle.Top,
-                        x * Image.ZoomScale + ClientRectangle.Left, ClientRectangle.Bottom );
+                    myGrid.AddLine( x * Image.ZoomScale, 0,
+                        x * Image.ZoomScale, myDisplaySize.Height );
                 }
             }
 
@@ -136,11 +166,17 @@ namespace Spryt
                 for ( int y = Image.GridVerticalOffset; y <= Image.Height; y += Image.GridHeight )
                 {
                     myGrid.StartFigure();
-                    myGrid.AddLine( ClientRectangle.Left, y * Image.ZoomScale + ClientRectangle.Top,
-                        ClientRectangle.Right, y * Image.ZoomScale + ClientRectangle.Top );
+                    myGrid.AddLine( 0, y * Image.ZoomScale,
+                        myDisplaySize.Width, y * Image.ZoomScale );
                 }
             }
 
+            Invalidate();
+        }
+
+        public void UpdateTiledView()
+        {
+            UpdateClientSize();
             Invalidate();
         }
 
@@ -217,6 +253,8 @@ namespace Spryt
                 switch ( myToolPanel.CurrentTool )
                 {
                     case Tool.Select:
+                        x = Wrap( x, Image.Width );
+                        y = Wrap( y, Image.Height );
                         if ( e.Button == MouseButtons.Left )
                         {
                             if ( mySelectedPixels[ x, y ] || ( mySelectedArea == 0 && CurrentLayer.Pixels[ x, y ] != Pixel.Empty ) )
@@ -322,8 +360,8 @@ namespace Spryt
                         {
                             for ( int py = 0; py < Image.Height; ++py )
                             {
-                                int tx = px - dx;
-                                int ty = py - dy;
+                                int tx = Wrap( px - dx, Image.Width );
+                                int ty = Wrap( py - dy, Image.Height );
 
                                 if ( Image.InBounds( tx, ty ) && selected[ tx, ty ] )
                                 {
@@ -377,6 +415,9 @@ namespace Spryt
 
         private void PixelSelect( int x, int y, bool deselect = false )
         {
+            x %= Image.Width;
+            y %= Image.Height;
+
             if ( mySelectedPixels[ x, y ] == deselect )
                 mySelectedArea += ( deselect ? -1 : 1 );
 
@@ -390,6 +431,9 @@ namespace Spryt
 
         private void WandSelect( int x, int y, bool deselect = false )
         {
+            x %= Image.Width;
+            y %= Image.Height;
+
             Stack<Point> stack = new Stack<Point>();
             stack.Push( new Point( x, y ) );
 
@@ -433,9 +477,9 @@ namespace Spryt
             int dx = x - myAnchorPos.X;
             int dy = y - myAnchorPos.Y;
 
-            myMovedRect = new RectangleF( ClientRectangle.X + dx * Image.ZoomScale,
-                ClientRectangle.Y + dy * Image.ZoomScale,
-                ClientRectangle.Width, ClientRectangle.Height );
+            myMovedRect = new RectangleF( dx * Image.ZoomScale,
+                dy * Image.ZoomScale,
+                myDisplaySize.Width, myDisplaySize.Height );
 
             UpdateScaledRegion();
             myScaledRegion.Translate( dx * Image.ZoomScale, dy * Image.ZoomScale );
@@ -451,6 +495,12 @@ namespace Spryt
 
         private bool CanDraw( int x, int y, bool ignoreSelected = false )
         {
+            if ( Image.TiledView )
+            {
+                x = Wrap( x, Image.Width );
+                y = Wrap( y, Image.Height );
+            }
+
             return Image.InBounds( x, y ) && ( ignoreSelected || mySelectedArea == 0 || mySelectedPixels[ x, y ] );
         }
 
@@ -471,8 +521,16 @@ namespace Spryt
             SendImageChange();
         }
 
+        private int Wrap( int a, int b )
+        {
+            return a - (int) Math.Floor( (float) a / b ) * b;
+        }
+
         private void Fill( int x, int y, Pixel pixel )
         {
+            x = Wrap( x, Image.Width );
+            y = Wrap( y, Image.Height );
+
             if ( !CanDraw( x, y ) )
                 return;
 
@@ -487,6 +545,11 @@ namespace Spryt
             while ( stack.Count > 0 )
             {
                 Point pos = stack.Pop();
+                if ( Image.TiledView )
+                {
+                    pos.X = Wrap( pos.X, Image.Width );
+                    pos.Y = Wrap( pos.Y, Image.Height );
+                }
                 if ( CanDraw( pos.X, pos.Y ) && CurrentLayer.Pixels[ pos.X, pos.Y ] == match )
                 {
                     CurrentLayer.SetPixel( pos.X, pos.Y, pixel );
@@ -503,14 +566,17 @@ namespace Spryt
 
         private void DrawBox( int x, int y, Pixel pixel )
         {
+            int maxWid = Image.Width * ( Image.TiledView ? 3 : 1 );
+            int maxHei = Image.Height * ( Image.TiledView ? 3 : 1 );
+
             int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
-            int right = Math.Min( Math.Max( x, myAnchorPos.X ), Image.Width - 1 );
+            int right = Math.Min( Math.Max( x, myAnchorPos.X ), maxWid - 1 );
             int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), Image.Height - 1 );
+            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), maxHei - 1 );
             
             for ( int px = left; px <= right; ++px )
                 for ( int py = top; py <= bottom; ++py )
-                    if( CanDraw( px, py ) )
+                    if ( CanDraw( px, py ) )
                         CurrentLayer.SetPixel( px, py, pixel );
 
             SendImageChange();
@@ -518,10 +584,13 @@ namespace Spryt
 
         private void UpdateBoxPreview( int x, int y )
         {
+            int maxWid = Image.Width * ( Image.TiledView ? 3 : 1 );
+            int maxHei = Image.Height * ( Image.TiledView ? 3 : 1 );
+
             int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
-            int right = Math.Min( Math.Max( x + 1, myAnchorPos.X + 1 ), Image.Width );
+            int right = Math.Min( Math.Max( x + 1, myAnchorPos.X + 1 ), maxWid );
             int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y + 1, myAnchorPos.Y + 1 ), Image.Height );
+            int bottom = Math.Min( Math.Max( y + 1, myAnchorPos.Y + 1 ), maxHei );
 
             myBoxPreview = new Rectangle( (int) Math.Round( left * Image.ZoomScale ),
                 (int) Math.Round( top * Image.ZoomScale ),
@@ -558,33 +627,38 @@ namespace Spryt
         {
             base.OnPaint( e );
 
-            e.Graphics.FillRectangle( stBackgroundBrush, ClientRectangle );
+            Rectangle bounds = new Rectangle( 0, 0, myDisplaySize.Width, myDisplaySize.Height );
+            RectangleF srcRect = new RectangleF( -0.5f, -0.5f, Image.Width, Image.Height );
 
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
-            RectangleF destRect = new RectangleF( ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height );
-            RectangleF srcRect = new RectangleF( -0.5f, -0.5f, Image.Width, Image.Height );
-
-            foreach ( Layer layer in Image.Layers )
+            foreach ( Rectangle rect in myViewRectangles )
             {
-                e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
+                e.Graphics.TranslateTransform( rect.X, rect.Y );
 
-                if ( myMovingLayer && myTempLayer != null && layer == CurrentLayer )
-                    e.Graphics.DrawImage( myTempLayer.Bitmap, myMovedRect, srcRect, GraphicsUnit.Pixel );
+                e.Graphics.FillRectangle( stBackgroundBrush, bounds );
+
+                RectangleF destRect = new RectangleF( bounds.X, bounds.Y, bounds.Width, bounds.Height );
+
+                foreach ( Layer layer in Image.Layers )
+                    e.Graphics.DrawImage( layer.Bitmap, destRect, srcRect, GraphicsUnit.Pixel );
+
+                e.Graphics.FillRegion( stSelectedAreaBrush, myScaledRegion );
+                
+                if ( Image.ShowGrid )
+                    e.Graphics.DrawPath( myGridPen, myGrid );
+
+                e.Graphics.TranslateTransform( -rect.X, -rect.Y );
             }
 
-            e.Graphics.FillRegion( stSelectedAreaBrush, myScaledRegion );
-
-            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Default;
+            if ( myMovingLayer && myTempLayer != null )
+                e.Graphics.DrawImage( myTempLayer.Bitmap, myMovedRect, srcRect, GraphicsUnit.Pixel );
 
             if ( mySelectingPixels || myDrawingBox )
             {
                 e.Graphics.FillRectangle( stBoxPreviewBrush, myBoxPreview );
                 e.Graphics.DrawRectangle( stBoxPreviewPen, myBoxPreview );
             }
-
-            if ( Image.ShowGrid )
-                e.Graphics.DrawPath( myGridPen, myGrid );
         }
 
         private void OnParentDisposed( object sender, EventArgs e )

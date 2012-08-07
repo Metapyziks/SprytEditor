@@ -186,7 +186,7 @@ namespace Spryt
             {
                 myTiledView = value;
                 if ( Canvas != null )
-                    Canvas.Invalidate();
+                    Canvas.UpdateTiledView();
             }
         }
 
@@ -243,8 +243,19 @@ namespace Spryt
             Tab.Controls.Add( Canvas );
         }
 
+        private int Wrap( int a, int b )
+        {
+            return a - (int) Math.Floor( (float) a / b ) * b;
+        }
+
         public bool InBounds( int x, int y )
         {
+            if ( TiledView )
+            {
+                x = Wrap( x, Width );
+                y = Wrap( y, Height );
+            }
+
             return x >= 0 && y >= 0 && x < Width && y < Height;
         }
 
