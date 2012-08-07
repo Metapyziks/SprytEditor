@@ -415,8 +415,8 @@ namespace Spryt
 
         private void PixelSelect( int x, int y, bool deselect = false )
         {
-            x %= Image.Width;
-            y %= Image.Height;
+            x = Wrap( x, Image.Width );
+            y = Wrap( y, Image.Height );
 
             if ( mySelectedPixels[ x, y ] == deselect )
                 mySelectedArea += ( deselect ? -1 : 1 );
@@ -431,8 +431,8 @@ namespace Spryt
 
         private void WandSelect( int x, int y, bool deselect = false )
         {
-            x %= Image.Width;
-            y %= Image.Height;
+            x = Wrap( x, Image.Width );
+            y = Wrap( y, Image.Height );
 
             Stack<Point> stack = new Stack<Point>();
             stack.Push( new Point( x, y ) );
@@ -459,10 +459,13 @@ namespace Spryt
 
         private void AreaSelect( int x, int y, bool deselect = false )
         {
+            int maxWid = Image.Width * ( Image.TiledView ? 3 : 1 );
+            int maxHei = Image.Height * ( Image.TiledView ? 3 : 1 );
+
             int left = Math.Max( Math.Min( x, myAnchorPos.X ), 0 );
-            int right = Math.Min( Math.Max( x, myAnchorPos.X ), Image.Width - 1 );
+            int right = Math.Min( Math.Max( x, myAnchorPos.X ), maxWid - 1 );
             int top = Math.Max( Math.Min( y, myAnchorPos.Y ), 0 );
-            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), Image.Height - 1 );
+            int bottom = Math.Min( Math.Max( y, myAnchorPos.Y ), maxHei - 1 );
 
             for ( int px = left; px <= right; ++px )
                 for ( int py = top; py <= bottom; ++py )
