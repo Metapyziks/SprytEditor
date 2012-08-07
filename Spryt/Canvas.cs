@@ -442,6 +442,11 @@ namespace Spryt
             while ( stack.Count > 0 )
             {
                 Point pos = stack.Pop();
+                if ( Image.TiledView )
+                {
+                    pos.X = Wrap( pos.X, Image.Width );
+                    pos.Y = Wrap( pos.Y, Image.Height );
+                }
                 if ( CanDraw( pos.X, pos.Y, true ) && mySelectedPixels[ pos.X, pos.Y ] == deselect && CurrentLayer.Pixels[ pos.X, pos.Y ] == match )
                 {
                     PixelSelect( pos.X, pos.Y, deselect );
