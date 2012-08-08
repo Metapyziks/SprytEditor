@@ -112,6 +112,7 @@ namespace Spryt
             newImage.ShowGrid = showGridToolStripMenuItem.Checked;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
+            newImage.PushState();
             ChangeImage( newImage );
             return newImage;
         }
@@ -123,6 +124,7 @@ namespace Spryt
             newImage.ZoomScale = ZoomScale;
             canvasTabs.TabPages.Add( newImage.Tab );
             myCurrentImages.Add( newImage );
+            newImage.PushState();
             ChangeImage( newImage );
             return newImage;
         }
@@ -185,8 +187,11 @@ namespace Spryt
 
         private void colourPalettePanel_PaletteChanged( object sender, PaletteChangedEventArgs e )
         {
-            if( CurrentImage != null )
+            if ( CurrentImage != null )
+            {
                 CurrentImage.Palette = (Color[]) e.Palette.Clone();
+                CurrentImage.PushState();
+            }
         }
 
         private void canvasTabs_SelectedIndexChanged( object sender, EventArgs e )

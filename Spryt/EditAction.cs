@@ -70,6 +70,7 @@ namespace Spryt
         private Size mySize;
         private String[] myLayerLabels;
         private Pixel[][,] myLayerPixels;
+        private Color[] myPalette;
 
         public ActionAnchor( ImageInfo image )
             : base( image )
@@ -77,6 +78,7 @@ namespace Spryt
             mySize = image.Size;
             myLayerLabels = image.Layers.Select( x => x.Label ).ToArray();
             myLayerPixels = image.Layers.Select( x => (Pixel[,]) x.Pixels.Clone() ).ToArray();
+            myPalette = (Color[]) image.Palette.Clone();
         }
 
         public override void Undo()
@@ -92,6 +94,7 @@ namespace Spryt
             }
 
             Image.UpdateLayers();
+            Image.Palette = (Color[]) myPalette.Clone();
         }
 
         public override void Redo()

@@ -210,8 +210,6 @@ namespace Spryt
             Layers.Add( new Layer( this ) );
 
             Modified = true;
-
-            ActionStack.Push( new ActionAnchor( this ) );
         }
 
         public ImageInfo( ToolPanel toolInfoPanel, String filePath )
@@ -225,8 +223,6 @@ namespace Spryt
             SetupCanvas( toolInfoPanel );
 
             Modified = false;
-
-            ActionStack.Push( new ActionAnchor( this ) );
         }
 
         private void SetupDefaultGrid()
