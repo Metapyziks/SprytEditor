@@ -216,6 +216,14 @@ namespace Spryt
         {
             switch ( e.KeyCode )
             {
+                case Keys.Z:
+                    if ( ModifierKeys.HasFlag( Keys.Control ) )
+                        Image.ActionStack.Undo();
+                    break;
+                case Keys.Y:
+                    if ( ModifierKeys.HasFlag( Keys.Control ) )
+                        Image.ActionStack.Redo();
+                    break;
                 case Keys.Delete:
                     if ( mySelectedArea != 0 )
                     {
