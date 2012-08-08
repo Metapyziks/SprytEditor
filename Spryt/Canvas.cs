@@ -286,6 +286,7 @@ namespace Spryt
                         break;
                     case Tool.Fill:
                         Fill( x, y, e.Button == MouseButtons.Left ? Image.CurrentPixel : Pixel.Empty );
+                        Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
                         break;
                     case Tool.Box:
                         myDrawingBox = true;
@@ -382,7 +383,10 @@ namespace Spryt
                 }
 
                 if ( myDrawingPencil )
+                {
                     myDrawingPencil = false;
+                    Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
+                }
 
                 if ( myDrawingBox || mySelectingPixels )
                 {
@@ -401,6 +405,7 @@ namespace Spryt
                             DrawBox( x, y, Pixel.Empty );
 
                         myDrawingBox = false;
+                        Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
                     }
                 }
             }

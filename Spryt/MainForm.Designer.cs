@@ -64,6 +64,8 @@
             this.fileImageList = new System.Windows.Forms.ImageList( this.components );
             this.toolsImageList = new System.Windows.Forms.ImageList( this.components );
             this.mainLayoutTable = new System.Windows.Forms.TableLayoutPanel();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colourPalettePanel = new Spryt.ColourPalettePanel();
             this.toolPanel = new Spryt.ToolPanel();
             this.canvasTabs = new Spryt.CanvasTabControl();
@@ -188,10 +190,13 @@
             // 
             // editToolStripMenuItem
             // 
-            this.editToolStripMenuItem.Enabled = false;
+            this.editToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem} );
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size( 39, 20 );
             this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.DropDownOpening += new System.EventHandler( this.editToolStripMenuItem_DropDownOpening );
             // 
             // viewToolStripMenuItem
             // 
@@ -341,6 +346,22 @@
             this.mainLayoutTable.Size = new System.Drawing.Size( 973, 661 );
             this.mainLayoutTable.TabIndex = 4;
             // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Enabled = false;
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler( this.undoToolStripMenuItem_Click );
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Enabled = false;
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler( this.redoToolStripMenuItem_Click );
+            // 
             // colourPalettePanel
             // 
             this.colourPalettePanel.AutoSize = true;
@@ -464,6 +485,8 @@
         private System.Windows.Forms.ToolStripMenuItem showGridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gridSizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tiledViewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
 
     }
 }

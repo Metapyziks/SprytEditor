@@ -324,5 +324,23 @@ namespace Spryt
                 }
             }
         }
+
+        private void undoToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            if ( CurrentImage != null )
+                CurrentImage.ActionStack.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            if ( CurrentImage != null )
+                CurrentImage.ActionStack.Redo();
+        }
+
+        private void editToolStripMenuItem_DropDownOpening( object sender, EventArgs e )
+        {
+            undoToolStripMenuItem.Enabled = CurrentImage != null && CurrentImage.ActionStack.Current != CurrentImage.ActionStack.First;
+            redoToolStripMenuItem.Enabled = CurrentImage != null && CurrentImage.ActionStack.Current != null && CurrentImage.ActionStack.Current.NextAction != null;
+        }
     }
 }

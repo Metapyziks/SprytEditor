@@ -71,6 +71,8 @@ namespace Spryt
             }
         }
 
+        public ActionStack ActionStack { get; private set; }
+
         public TabPage Tab { get; private set; }
         public Canvas Canvas { get; private set; }
 
@@ -196,6 +198,8 @@ namespace Spryt
 
         public ImageInfo( ToolPanel toolInfoPanel, int width, int height, String name = "untitled.png" )
         {
+            ActionStack = new ActionStack();
+
             Size = new Size( width, height );
             FilePath = name;
 
@@ -206,10 +210,14 @@ namespace Spryt
             Layers.Add( new Layer( this ) );
 
             Modified = true;
+
+            ActionStack.Push( new ActionAnchor( this ) );
         }
 
         public ImageInfo( ToolPanel toolInfoPanel, String filePath )
         {
+            ActionStack = new ActionStack();
+
             FilePath = filePath;
 
             SetupDefaultGrid();
@@ -217,6 +225,8 @@ namespace Spryt
             SetupCanvas( toolInfoPanel );
 
             Modified = false;
+
+            ActionStack.Push( new ActionAnchor( this ) );
         }
 
         private void SetupDefaultGrid()
