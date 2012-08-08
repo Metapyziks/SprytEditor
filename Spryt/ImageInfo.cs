@@ -269,32 +269,37 @@ namespace Spryt
             return x >= 0 && y >= 0 && x < Width && y < Height;
         }
 
+        public void PushState()
+        {
+            ActionStack.Push( new ActionAnchor( this ) );
+        }
+
         public void AddLayer( int index = -1, string label = null )
         {
             if ( index == -1 )
                 index = Layers.Count;
 
-            Layers.Insert( index, new Layer( this, label ) );
+            Layer layer = new Layer( this, label );
+            Layers.Insert( index, layer );
 
             Modified = true;
+            PushState();
 
-            if( LayersChanged != null )
-                LayersChanged( this, new EventArgs() );
+            UpdateLayers();
         }
 
         public void RemoveLayer( int index )
         {
+            Layer layer = Layers[ index ];
             Layers.RemoveAt( index );
-
-            Modified = true;
 
             if ( Layers.Count == 0 )
                 Layers.Add( new Layer( this ) );
 
-            if ( LayersChanged != null )
-                LayersChanged( this, new EventArgs() );
+            Modified = true;
+            PushState();
 
-            Canvas.SendImageChange();
+            UpdateLayers();
         }
 
         public void SwapLayers( int indexA, int indexB )
@@ -309,7 +314,13 @@ namespace Spryt
             Layers.Insert( indexB, a );
 
             Modified = true;
+            PushState();
 
+            UpdateLayers();
+        }
+
+        public void UpdateLayers()
+        {
             if ( LayersChanged != null )
                 LayersChanged( this, new EventArgs() );
 

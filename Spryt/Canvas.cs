@@ -204,6 +204,9 @@ namespace Spryt
 
         public void SendImageChange()
         {
+            if ( CurrentLayerIndex >= Image.Layers.Count )
+                CurrentLayerIndex = Image.Layers.Count - 1;
+
             Invalidate();
 
             Image.Modified = true;
@@ -294,7 +297,7 @@ namespace Spryt
                         break;
                     case Tool.Fill:
                         Fill( x, y, e.Button == MouseButtons.Left ? Image.CurrentPixel : Pixel.Empty );
-                        Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
+                        Image.PushState();
                         break;
                     case Tool.Box:
                         myDrawingBox = true;
@@ -393,7 +396,7 @@ namespace Spryt
                 if ( myDrawingPencil )
                 {
                     myDrawingPencil = false;
-                    Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
+                    Image.PushState();
                 }
 
                 if ( myDrawingBox || mySelectingPixels )
@@ -413,7 +416,7 @@ namespace Spryt
                             DrawBox( x, y, Pixel.Empty );
 
                         myDrawingBox = false;
-                        Image.ActionStack.Push( new EditLayerAction( Image, CurrentLayer ) );
+                        Image.PushState();
                     }
                 }
             }

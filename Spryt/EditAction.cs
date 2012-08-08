@@ -91,7 +91,7 @@ namespace Spryt
                         Image.Layers[ i ].SetPixel( x, y, myLayerPixels[ i ][ x, y ] );
             }
 
-            Image.Canvas.SendImageChange();
+            Image.UpdateLayers();
         }
 
         public override void Redo()
@@ -124,6 +124,65 @@ namespace Spryt
         public override void Redo()
         {
             Undo();
+        }
+    }
+
+    class AddLayerAction : EditAction
+    {
+        private int myLayerIndex;
+        private String myLabel;
+
+        public AddLayerAction( ImageInfo image, Layer layer )
+            : base( image )
+        {
+            myLayerIndex = image.Layers.IndexOf( layer );
+            myLabel = layer.Label;
+        }
+
+        public override void Undo()
+        {
+            Image.Layers.RemoveAt( myLayerIndex );
+            Image.UpdateLayers();
+        }
+
+        public override void Redo()
+        {
+            Image.Layers.Insert( myLayerIndex, new Layer( Image, myLabel ) );
+            Image.UpdateLayers();
+        }
+    }
+
+    class RemoveLayerAction : EditAction
+    {
+        private int myLayerIndex;
+        private String myLabel;
+        private Pixel[ , ] myPixels;
+
+        public RemoveLayerAction( ImageInfo image, int index, Layer layer )
+            : base( image )
+        {
+            myLayerIndex = index;
+            myLabel = layer.Label;
+            myPixels = (Pixel[,]) layer.Pixels.Clone();
+        }
+
+        public override void Undo()
+        {
+            Image.Layers.Insert( myLayerIndex, new Layer( Image, myLabel ) );
+            for ( int x = 0; x < Image.Width; ++x )
+                for ( int y = 0; y < Image.Height; ++y )
+                    Image.Layers[ myLayerIndex ].SetPixel( x, y, myPixels[ x, y ] );
+
+            Image.UpdateLayers();
+        }
+
+        public override void Redo()
+        {
+            Image.Layers.RemoveAt( myLayerIndex );
+            if ( Image.Layers.Count == 0 )
+                Image.Layers.Add( new Layer( Image ) );
+
+            Image.UpdateLayers();
         }
     }
 }
