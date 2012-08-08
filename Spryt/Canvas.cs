@@ -390,6 +390,8 @@ namespace Spryt
                     myMovingLayer = false;
                     myMovingSelected = false;
 
+                    Image.PushState();
+
                     SendImageChange();
                 }
 
