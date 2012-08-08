@@ -136,6 +136,7 @@ namespace Spryt
             if ( e.ColumnIndex == 1 && Image != null )
             {
                 Image.Layers[ Image.Layers.Count - e.RowIndex - 1 ].Label = layerGrid[ 1, e.RowIndex ].Value.ToString();
+                Image.PushState();
             }
         }
     }
