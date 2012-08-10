@@ -320,7 +320,8 @@ namespace Spryt
             if ( LayersChanged != null )
                 LayersChanged( this, new EventArgs() );
 
-            Canvas.SendImageChange();
+            if( Canvas != null )
+                Canvas.SendImageChange();
         }
 
         public void Save( String filePath = null )

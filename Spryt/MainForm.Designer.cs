@@ -46,6 +46,8 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,8 +66,6 @@
             this.fileImageList = new System.Windows.Forms.ImageList( this.components );
             this.toolsImageList = new System.Windows.Forms.ImageList( this.components );
             this.mainLayoutTable = new System.Windows.Forms.TableLayoutPanel();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colourPalettePanel = new Spryt.ColourPalettePanel();
             this.toolPanel = new Spryt.ToolPanel();
             this.canvasTabs = new Spryt.CanvasTabControl();
@@ -197,6 +197,22 @@
             this.editToolStripMenuItem.Size = new System.Drawing.Size( 39, 20 );
             this.editToolStripMenuItem.Text = "Edit";
             this.editToolStripMenuItem.DropDownOpening += new System.EventHandler( this.editToolStripMenuItem_DropDownOpening );
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Enabled = false;
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size( 103, 22 );
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler( this.undoToolStripMenuItem_Click );
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Enabled = false;
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size( 103, 22 );
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler( this.redoToolStripMenuItem_Click );
             // 
             // viewToolStripMenuItem
             // 
@@ -345,22 +361,6 @@
             this.mainLayoutTable.RowStyles.Add( new System.Windows.Forms.RowStyle() );
             this.mainLayoutTable.Size = new System.Drawing.Size( 973, 661 );
             this.mainLayoutTable.TabIndex = 4;
-            // 
-            // undoToolStripMenuItem
-            // 
-            this.undoToolStripMenuItem.Enabled = false;
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler( this.undoToolStripMenuItem_Click );
-            // 
-            // redoToolStripMenuItem
-            // 
-            this.redoToolStripMenuItem.Enabled = false;
-            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
-            this.redoToolStripMenuItem.Text = "Redo";
-            this.redoToolStripMenuItem.Click += new System.EventHandler( this.redoToolStripMenuItem_Click );
             // 
             // colourPalettePanel
             // 
